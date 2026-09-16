@@ -1,114 +1,125 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Restaurant Management API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Backend en NestJS (ESModules) desarrollado con TypeORM, PostgreSQL y Jest. Esta API provee la infraestructura para la gestión integral de un restaurante (administración de mesas, comandas, menú y órdenes).
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+---
 
-## Description
+## Requisitos Previos
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Antes de comenzar, asegúrate de tener instalado localmente:
+- **Node.js** (v18 o superior)
+- **npm** (v9 o superior)
+- **Docker** y **Docker Desktop / Docker Compose**
+- **Git**
 
-## Project setup
+---
 
+## Guía de Inicio Rápido (Setup Local)
+
+Sigue estos pasos en orden para levantar la aplicación y la base de datos en tu entorno de desarrollo:
+
+### 1. Sincronizar la rama `dev`
 ```bash
-$ npm install
+git checkout dev
+git pull origin dev
 ```
 
-## Compile and run the project
-
+### 2. Crear tu rama de trabajo
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+git checkout -b feature/nombre-de-tu-tarea
 ```
 
-## Run tests
-
+### 3. Instalar dependencias
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+npm install
 ```
 
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
+### 4. Configurar variables de entorno
+Copia el archivo de plantilla `.env.example` para generar tu archivo local `.env`:
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+cp .env.example .env
+```
+*(Las credenciales predeterminadas en `.env.example` están configuradas para funcionar directamente con la base de datos en Docker).*
+
+### 5. Iniciar la base de datos PostgreSQL (Docker)
+Levanta el contenedor de PostgreSQL `restaurant_db` en segundo plano:
+```bash
+docker compose up -d
+```
+*Para verificar que el contenedor está corriendo:*
+```bash
+docker ps
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### 6. Iniciar la aplicación en modo desarrollo
+```bash
+npm run start:dev
+```
+La aplicación se compilará y estará escuchando por defecto en: `http://localhost:3000`
 
-## Observability
+---
 
-In production applications, observability is essential for understanding how your system behaves, detecting issues early, and maintaining reliable performance.
+## Documentación Interactiva de la API (Swagger)
 
-[NestJS Observe](https://observe.nestjs.com) automatically instruments your NestJS application, giving you deep visibility into your system with minimal setup:
+Con la aplicación en ejecución (`npm run start:dev`), puedes acceder a la consola interactiva de Swagger para probar los endpoints y consultar los DTOs:
 
-- **Distributed tracing:** Follow requests across services and understand how they flow through your system.
-- **Waterfall analysis:** Visualize request execution and identify slow operations, bottlenecks, and unexpected delays.
-- **Performance analysis:** Analyze application performance in real time and quickly pinpoint areas that need optimization.
-- **Metrics:** Track key application and infrastructure metrics to understand system health and performance trends.
-- **Logging:** Centralize and correlate logs with traces and other telemetry to make debugging easier.
-- **Error tracking:** Detect errors quickly and investigate their root causes with the surrounding context.
-- **SLA monitoring:** Track service-level objectives and identify when your application is approaching or exceeding defined thresholds.
-- **Alarms and alerts:** Set up alerts for critical errors, performance degradation, SLA violations, and other anomalies so your team can react quickly.
+**`http://localhost:3000/api/docs`**
 
-## Resources
+---
 
-Check out a few resources that may come in handy when working with NestJS:
+## Pruebas Unitarias e Integración (Jest)
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Auto-instrument your application with [NestJS Observer](https://observer.nestjs.com). Distributed tracing, metrics, and logging made easy. Error tracking and performance monitoring for your NestJS applications.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+Para ejecutar la suite de pruebas del proyecto:
 
-## Support
+```bash
+# Ejecutar pruebas unitarias
+npm run test
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+# Ejecutar pruebas en modo watch (desarrollo)
+npm run test:watch
 
-## Stay in touch
+# Ver la cobertura de código
+npm run test:cov
+```
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+---
 
-## License
+## Comandos Útiles
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+| Comando | Descripción |
+| :--- | :--- |
+| `npm run start:dev` | Inicia el servidor con recarga en caliente (*watch mode*). |
+| `npm run build` | Compila el proyecto en la carpeta `dist/`. |
+| `npm run lint` | Analiza el código en busca de errores de estilo o calidad. |
+| `docker compose up -d` | Levanta PostgreSQL en Docker. |
+| `docker compose down` | Detiene y remueve los contenedores de Docker. |
+
+---
+
+## Reglas y Flujo de Trabajo en Git
+
+1. **Ramas Principales:**
+   - `main`: Código en producción 100% estable.
+   - `dev`: Rama de integración de todas las funcionalidades.
+2. **Creación de PRs:** Toda nueva funcionalidad debe enviarse mediante un **Pull Request hacia la rama `dev`**.
+3. **Aprobaciones:** Todo PR requiere la revisión y aprobación de **al menos 1 compañero de equipo** antes de ser fusionado.
+4. **Seguridad:** NUNCA subas el archivo `.env` ni credenciales al repositorio.
+
+---
+
+## Estructura del Proyecto
+
+```text
+.
+├── .github/                  # Plantillas de Pull Requests y guías de contribución
+├── src/
+│   ├── modules/
+│   │   └── tables/           # Módulo de Mesas (HU-002)
+│   │       └── entities/
+│   │           └── table.entity.ts
+│   ├── app.module.ts         # Módulo principal y conexión TypeORM
+│   └── main.ts               # Punto de entrada de NestJS y Swagger
+├── docker-compose.yml        # Servicio PostgreSQL
+├── .env.example              # Plantilla de variables de entorno
+└── jest.config.json          # Configuración de pruebas con ESM
+```
