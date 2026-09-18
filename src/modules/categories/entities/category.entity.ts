@@ -1,4 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import { CategoryStatus } from '../enum/category-status.enum.js';
 
 @Entity('categories')
@@ -12,7 +18,11 @@ export class Category {
   @Column({ type: 'text', nullable: true })
   description: string;
 
-  @Column({ type: 'enum', enum: CategoryStatus, default: CategoryStatus.ACTIVE })
+  @Column({
+    type: 'enum',
+    enum: CategoryStatus,
+    default: CategoryStatus.ACTIVE,
+  })
   status: CategoryStatus;
 
   @CreateDateColumn({ name: 'created_at' })
