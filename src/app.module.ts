@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Table } from './modules/tables/entities/table.entity.js';
+import { CategoriesModule } from './modules/categories/categories.module.js';
 import { TablesModule } from './modules/tables/tables.module.js'; 
 
 @Module({
@@ -14,10 +14,11 @@ import { TablesModule } from './modules/tables/tables.module.js';
       username: process.env.DB_USERNAME || 'postgres',
       password: process.env.DB_PASSWORD || 'postgrespassword',
       database: process.env.DB_DATABASE || 'restaurant_db',
-      entities: [Table],
-      synchronize: true, // Sincroniza automáticamente la entidad Table en PostgreSQL
+      autoLoadEntities: true,
+      synchronize: true, // Sincroniza automáticamente las entidades en PostgreSQL (solo en desarrollo)
     }),
     TablesModule,
+    CategoriesModule,
   ],
 })
 export class AppModule {}
