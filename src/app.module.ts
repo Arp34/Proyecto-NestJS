@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { CustomersModule } from './modules/customers/customers.module.js';
 import { CategoriesModule } from './modules/categories/categories.module.js';
 import { TablesModule } from './modules/tables/tables.module.js';
+import { ProductModule } from './modules/product/product.module.js';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { TablesModule } from './modules/tables/tables.module.js';
       synchronize: true, // Sincroniza automáticamente las entidades en PostgreSQL (solo en desarrollo)
     }),
     CategoriesModule,
+    ProductModule,
     CustomersModule,
     TablesModule,
   ],
