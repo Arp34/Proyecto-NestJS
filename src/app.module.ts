@@ -8,6 +8,7 @@ import { ReservationsModule } from './modules/reservations/reservations.module.j
 import { CategoriesModule } from './modules/categories/categories.module.js';
 import { CustomersModule } from './modules/customers/customers.module.js';
 import { TablesModule } from './modules/tables/tables.module.js';
+import { ProductModule } from './modules/product/product.module.js';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { TablesModule } from './modules/tables/tables.module.js';
 
     ReservationsModule,
     CategoriesModule,
+    ProductModule,
     CustomersModule,
     TablesModule,
   ],
