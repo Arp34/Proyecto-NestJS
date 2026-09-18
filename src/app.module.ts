@@ -1,13 +1,16 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+
 import { Table } from './modules/tables/entities/table.entity.js';
 import { ReservationsModule } from './modules/reservations/reservations.module.js';
 import { Reservation } from './modules/reservations/entities/reservation.entity.js';
+import { CategoriesModule } from './modules/categories/categories.module.js';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.DB_HOST || 'localhost',
@@ -15,10 +18,14 @@ import { Reservation } from './modules/reservations/entities/reservation.entity.
       username: process.env.DB_USERNAME || 'postgres',
       password: process.env.DB_PASSWORD || 'postgrespassword',
       database: process.env.DB_DATABASE || 'restaurant_db',
+
       entities: [Table, Reservation],
-      synchronize: true, // Sincroniza automáticamente la entidad Table en PostgreSQL
+      autoLoadEntities: true,
+      synchronize: true,
     }),
+
     ReservationsModule,
+    CategoriesModule,
   ],
 })
 export class AppModule {}
