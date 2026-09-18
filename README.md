@@ -59,6 +59,15 @@ La aplicación se compilará y estará escuchando por defecto en: `http://localh
 
 ---
 
+## 🛠️ Guía de Creación de Módulos (CLI NestJS)
+
+Para mantener la arquitectura del proyecto limpia y organizada, **todos los módulos deben ubicarse dentro de la carpeta `src/modules/`**.
+
+Al ejecutar el comando de generación de NestJS CLI, asegúrate de incluir el prefijo `modules/` antes del nombre del recurso:
+
+```bash
+npx nest generate resource modules/<nombre_del_modulo>
+
 ## Documentación Interactiva de la API (Swagger)
 
 Con la aplicación en ejecución (`npm run start:dev`), puedes acceder a la consola interactiva de Swagger para probar los endpoints y consultar los DTOs:
