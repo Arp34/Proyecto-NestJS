@@ -2,6 +2,9 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Table } from './modules/tables/entities/table.entity.js';
+import { CustomersModule } from './modules/customers/customers.module.js';
+import { CustomersModule } from './modules/customers/customers.module.js';
+import { CustomersModule } from './modules/customers/customers.module.js';
 
 @Module({
   imports: [
@@ -16,6 +19,7 @@ import { Table } from './modules/tables/entities/table.entity.js';
       entities: [Table],
       synchronize: true, // Sincroniza automáticamente la entidad Table en PostgreSQL
     }),
+    CustomersModule,
   ],
 })
 export class AppModule {}
