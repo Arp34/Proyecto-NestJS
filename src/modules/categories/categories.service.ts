@@ -1,4 +1,8 @@
-import {Injectable, NotFoundException, ConflictException} from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ILike, Repository } from 'typeorm';
 import { CreateCategoryDto } from './dto/create-category.dto.js';
@@ -29,8 +33,9 @@ export class CategoriesService {
     }
 
     const newCategory = this.categoryRepository.create({
-      ...createCategoryDto,
       name,
+      description: createCategoryDto.description,
+      status: createCategoryDto.status,
     });
 
     try {
@@ -66,10 +71,7 @@ export class CategoriesService {
     return category;
   }
 
-  async update(
-    id: string,
-    updateCategoryDto: UpdateCategoryDto,
-  ) {
+  async update(id: string, updateCategoryDto: UpdateCategoryDto) {
     const category = await this.findOne(id);
 
     if (updateCategoryDto.name !== undefined) {
@@ -81,10 +83,7 @@ export class CategoriesService {
         },
       });
 
-      if (
-        existingCategory &&
-        existingCategory.id !== id
-      ) {
+      if (existingCategory && existingCategory.id !== id) {
         throw new ConflictException({
           message: 'El nombre de la categoría ya está registrado',
           errorCode: 'CATEGORY_NAME_ALREADY_EXISTS',
@@ -94,10 +93,7 @@ export class CategoriesService {
       updateCategoryDto.name = name;
     }
 
-    this.categoryRepository.merge(
-      category,
-      updateCategoryDto,
-    );
+    this.categoryRepository.merge(category, updateCategoryDto);
 
     try {
       return await this.categoryRepository.save(category);

@@ -1,4 +1,10 @@
-import { IsString, IsNotEmpty, IsOptional, MaxLength, IsEnum } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsOptional,
+  MaxLength,
+  IsEnum,
+} from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { CategoryStatus } from '../enum/category-status.enum.js';
 
@@ -9,7 +15,10 @@ export class CreateCategoryDto {
   @MaxLength(100, { message: 'El nombre no puede exceder los 100 caracteres' })
   name: string;
 
-  @ApiPropertyOptional({ description: 'Descripción de la categoría', example: 'Todos los postres fríos y calientes' })
+  @ApiPropertyOptional({
+    description: 'Descripción de la categoría',
+    example: 'Todos los postres fríos y calientes',
+  })
   @IsString()
   @IsOptional()
   description?: string;
