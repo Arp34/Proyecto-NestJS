@@ -2,18 +2,60 @@ import { Injectable } from '@nestjs/common';
 import { CreateCustomerDto } from './dto/create-customer.dto.js';
 import { UpdateCustomerDto } from './dto/update-customer.dto.js';
 
+
+
+
+export interface Customer {
+    id:number,
+    name: string,
+    email: string,
+    phone: string
+  }
+
 @Injectable()
 export class CustomersService {
+  private readonly customers: Customer  [] = [];
+
   create(createCustomerDto: CreateCustomerDto) {
-    return 'This action adds a new customer';
+ 
+
+    const emailExist = this.customers.some(
+      customer => customer.email === createCustomerDto.email.toLowerCase()
+
+    ) 
+
+    if(emailExist){
+      return{
+        message:"email ya fue registrado"
+      }
+
+    } 
+    const newCustomer :Customer = {
+      id: this.customers.length + 1,
+      name: createCustomerDto.name.toLowerCase(),
+      email: createCustomerDto.email.toLowerCase(),
+      phone: createCustomerDto.phone,
+    };
+
+    this.customers.push(newCustomer);
+
+    return {
+      message: 'customer create succesfully',
+      customer:newCustomer
+    }
+
   }
 
   findAll() {
-    return `This action returns all customers`;
+    return this.customers;
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} customer`;
+    if(!id){
+    return {
+      ok:false,
+      message:""
+    }};
   }
 
   update(id: number, updateCustomerDto: UpdateCustomerDto) {

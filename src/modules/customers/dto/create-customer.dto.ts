@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsOptional, IsString } from "class-validator";
+import { IsNotEmpty, IsString, MinLength } from "class-validator";
 
 export class CreateCustomerDto {
 
@@ -7,8 +7,8 @@ export class CreateCustomerDto {
     name: string;
     
     @IsString()
-    @IsOptional()
-    phone?: string;
+    @MinLength(10,{message:"debe tener minimo 10 numeros"})
+    phone: string;
     
     @IsString()
     @IsNotEmpty()
