@@ -37,6 +37,6 @@ export class ReservationsService {
   }
 
   remove(id: string) {
-    return this.reservationsRepository.delete( id );
+    return this.reservationsRepository.delete(id);
   }
 }
