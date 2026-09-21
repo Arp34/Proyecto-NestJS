@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Table } from './modules/tables/entities/table.entity.js';
 import { TablesModule } from './modules/tables/tables.module.js'; 
 
+
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -14,8 +15,8 @@ import { TablesModule } from './modules/tables/tables.module.js';
       username: process.env.DB_USERNAME || 'postgres',
       password: process.env.DB_PASSWORD || 'postgrespassword',
       database: process.env.DB_DATABASE || 'restaurant_db',
-      entities: [Table],
-      synchronize: true, // Sincroniza automáticamente la entidad Table en PostgreSQL
+      autoLoadEntities: true,
+      synchronize: true, // Sincroniza automáticamente las entidades en PostgreSQL (solo en desarrollo)
     }),
     TablesModule,
   ],
