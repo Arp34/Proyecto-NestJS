@@ -1,35 +1,37 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { 
+    Column, 
+    Entity, 
+    PrimaryGeneratedColumn, 
+    CreateDateColumn, 
+    UpdateDateColumn 
+} from "typeorm";
 
-export enum TableStatus {
-  AVAILABLE = 'AVAILABLE',
-  OCCUPIED = 'OCCUPIED',
-  OUT_OF_SERVICE = 'OUT_OF_SERVICE',
+export enum tableStatus {
+    AVAILABLE = "available",
+    OCCUPIED = "occupied",
+    RESERVED = "reserved"
 }
 
-@Entity('tables')
+@Entity("restaurant_table") // Note: "table" is often a reserved SQL keyword, so renaming the DB table is safer
 export class Table {
-  @PrimaryGeneratedColumn('uuid')
-  id!: string;
+    @PrimaryGeneratedColumn("uuid")
+    id: string;
 
-  @Column({ type: 'int', unique: true })
-  number!: number;
+    @Column({ type: "int" })
+    number: number;
 
-  @Column({ type: 'int' })
-  capacity!: number;
+    @Column({ type: "int" })
+    capacity: number;
 
-  @Column({ type: 'varchar' })
-  zone!: string;
+    @Column({ type: "varchar" })
+    zone: string;
 
-  @Column({
-    type: 'enum',
-    enum: TableStatus,
-    default: TableStatus.AVAILABLE,
-  })
-  status!: TableStatus;
+    @Column({ type: "enum", enum :tableStatus ,default: tableStatus.AVAILABLE })
+    status: string;
 
-  @CreateDateColumn()
-  createdAt!: Date;
+    @CreateDateColumn()
+    createAt: Date;
 
-  @UpdateDateColumn()
-  updatedAt!: Date;
+    @UpdateDateColumn()
+    updateAt: Date;
 }
