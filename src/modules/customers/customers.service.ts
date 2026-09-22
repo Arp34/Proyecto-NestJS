@@ -1,68 +1,47 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+
 import { CreateCustomerDto } from './dto/create-customer.dto.js';
 import { UpdateCustomerDto } from './dto/update-customer.dto.js';
-
-
-
-
-export interface Customer {
-    id:number,
-    name: string,
-    email: string,
-    phone: string
-  }
+import { Customer } from './entities/customer.entity.js';
 
 @Injectable()
 export class CustomersService {
-  private readonly customers: Customer  [] = [];
+
+  constructor(
+    @InjectRepository(Customer)
+    private readonly customerRepository: Repository<Customer>,
+  ) {}
 
   create(createCustomerDto: CreateCustomerDto) {
- 
+    const customer =
+      this.customerRepository.create(createCustomerDto);
 
-    const emailExist = this.customers.some(
-      customer => customer.email === createCustomerDto.email.toLowerCase()
-
-    ) 
-
-    if(emailExist){
-      return{
-        message:"email ya fue registrado"
-      }
-
-    } 
-    const newCustomer :Customer = {
-      id: this.customers.length + 1,
-      name: createCustomerDto.name.toLowerCase(),
-      email: createCustomerDto.email.toLowerCase(),
-      phone: createCustomerDto.phone,
-    };
-
-    this.customers.push(newCustomer);
-
-    return {
-      message: 'customer create succesfully',
-      customer:newCustomer
-    }
-
+    return this.customerRepository.save(customer);
   }
 
   findAll() {
-    return this.customers;
+    return this.customerRepository.find();
   }
 
-  findOne(id: number) {
-    if(!id){
-    return {
-      ok:false,
-      message:""
-    }};
+  findOne(id: string) {
+    return this.customerRepository.findOneBy({ id });
   }
 
-  update(id: number, updateCustomerDto: UpdateCustomerDto) {
-    return `This action updates a #${id} customer`;
+  async update(
+    id: string,
+    updateCustomerDto: UpdateCustomerDto,
+  ) {
+    await this.customerRepository.update(
+      id,
+      updateCustomerDto,
+    );
+
+    return this.customerRepository.findOneBy({ id });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} customer`;
+  remove(id: string) {
+    return this.customerRepository.delete(id);
   }
 }

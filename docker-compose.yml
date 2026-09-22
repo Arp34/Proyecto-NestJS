@@ -6,8 +6,8 @@ services:
     container_name: restaurant_db
     restart: always
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgrespassword
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: restaurant_db
     ports:
       - '5432:5432'
