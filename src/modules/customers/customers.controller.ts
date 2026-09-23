@@ -7,10 +7,7 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
-import {
-  ApiOperation,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { CustomersService } from './customers.service.js';
 import { CreateCustomerDto } from './dto/create-customer.dto.js';
@@ -19,10 +16,7 @@ import { UpdateCustomerDto } from './dto/update-customer.dto.js';
 @ApiTags('Customers')
 @Controller('customers')
 export class CustomersController {
-
-  constructor(
-    private readonly customersService: CustomersService,
-  ) {}
+  constructor(private readonly customersService: CustomersService) {}
 
   @Post()
   @ApiOperation({
@@ -56,10 +50,7 @@ export class CustomersController {
     @Param('id') id: string,
     @Body() updateCustomerDto: UpdateCustomerDto,
   ) {
-    return this.customersService.update(
-      id,
-      updateCustomerDto,
-    );
+    return this.customersService.update(id, updateCustomerDto);
   }
 
   @Delete(':id')

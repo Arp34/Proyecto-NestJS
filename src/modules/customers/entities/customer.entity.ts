@@ -8,7 +8,6 @@ import {
 
 @Entity('customers')
 export class Customer {
-
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -28,8 +27,9 @@ export class Customer {
     type: 'varchar',
     length: 255,
     nullable: true,
+    unique: true,
   })
-  email?: string;
+  email: string;
 
   @CreateDateColumn({
     name: 'created_at',

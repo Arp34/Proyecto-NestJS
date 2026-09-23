@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -8,15 +12,21 @@ import { Customer } from './entities/customer.entity.js';
 
 @Injectable()
 export class CustomersService {
-
   constructor(
     @InjectRepository(Customer)
     private readonly customerRepository: Repository<Customer>,
   ) {}
 
-  create(createCustomerDto: CreateCustomerDto) {
-    const customer =
-      this.customerRepository.create(createCustomerDto);
+  async create(createCustomerDto: CreateCustomerDto) {
+    const existingCustomer = await this.customerRepository.findOne({
+      where: {
+        email: createCustomerDto.email,
+      },
+    });
+    if (existingCustomer) {
+      throw new ConflictException('El email ya esta registrado');
+    }
+    const customer = this.customerRepository.create(createCustomerDto);
 
     return this.customerRepository.save(customer);
   }
@@ -29,19 +39,35 @@ export class CustomersService {
     return this.customerRepository.findOneBy({ id });
   }
 
-  async update(
-    id: string,
-    updateCustomerDto: UpdateCustomerDto,
-  ) {
-    await this.customerRepository.update(
-      id,
-      updateCustomerDto,
-    );
+  async update(id: string, updateCustomerDto: UpdateCustomerDto) {
+    if (updateCustomerDto.email) {
+      const existingCustomer = await this.customerRepository.findOne({
+        where: {
+          email: updateCustomerDto.email,
+        },
+      });
+
+      if (existingCustomer && existingCustomer.id !== id) {
+        throw new ConflictException('El email ya está registrado');
+      }
+    }
+
+    await this.customerRepository.update(id, updateCustomerDto);
 
     return this.customerRepository.findOneBy({ id });
   }
 
-  remove(id: string) {
-    return this.customerRepository.delete(id);
+  async remove(id: string) {
+    const customer = await this.customerRepository.findOneBy({ id });
+
+    if (!customer) {
+      throw new NotFoundException('Cliente no encontrado');
+    }
+
+    await this.customerRepository.delete(id);
+
+    return {
+      message: 'Cliente eliminado correctamente',
+    };
   }
 }

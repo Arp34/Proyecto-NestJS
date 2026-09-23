@@ -6,9 +6,7 @@ import { CustomersService } from './customers.service.js';
 import { Customer } from './entities/customer.entity.js';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Customer]),
-  ],
+  imports: [TypeOrmModule.forFeature([Customer])],
   controllers: [CustomersController],
   providers: [CustomersService],
 })
