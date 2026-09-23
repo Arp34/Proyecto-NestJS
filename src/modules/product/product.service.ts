@@ -51,6 +51,7 @@ export class ProductService {
   }
 
   async remove(id: string) {
+    // Eliminar
     const productRemove = await this.findOne(id);
 
     return await this.productRepository.remove(productRemove);
