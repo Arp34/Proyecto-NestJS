@@ -1,11 +1,19 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseUUIDPipe } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  ParseUUIDPipe,
+} from '@nestjs/common';
 import { TablesService } from './tables.service.js';
-import { CreateTableDto } from './dto/create-table.dto.js'; 
+import { CreateTableDto } from './dto/create-table.dto.js';
 import { UpdateTableDto } from './dto/update-table.dto.js';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 
 @ApiTags('tables')
-
 @Controller('tables')
 export class TablesController {
   constructor(private readonly tablesService: TablesService) {}
@@ -42,8 +50,8 @@ export class TablesController {
   @ApiResponse({ status: 200, description: 'Mesa actualizada exitosamente.' })
   @ApiResponse({ status: 404, description: 'Mesa no encontrada.' })
   update(
-    @Param('id', ParseUUIDPipe) id: string, 
-    @Body() updateTableDto: UpdateTableDto
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() updateTableDto: UpdateTableDto,
   ) {
     return this.tablesService.update(id, updateTableDto);
   }
