@@ -7,8 +7,9 @@ import {
   IsString,
   IsIn,
   MaxLength,
-  IsUUID,
+
 } from 'class-validator';
+import { Transform } from 'class-transformer';
 
 export class CreateTableDto {
   @ApiProperty({
@@ -33,6 +34,7 @@ export class CreateTableDto {
     description: 'Zona de la mesa',
     example: 'Terraza',
   })
+  @Transform(({ value }) => value?.trim())
   @IsString({ message: 'La zona debe ser un texto' })
   @IsNotEmpty({ message: 'La zona es requerida' })
   @MaxLength(50, { message: 'La zona no puede exceder los 50 caracteres' })
