@@ -12,12 +12,12 @@ export enum tableStatus {
     RESERVED = "reserved"
 }
 
-@Entity("restaurant_table") // Note: "table" is often a reserved SQL keyword, so renaming the DB table is safer
+@Entity('tables')// Note: "table" is often a reserved SQL keyword, so renaming the DB table is safer
 export class Table {
     @PrimaryGeneratedColumn("uuid")
     id: string;
 
-    @Column({ type: "int" })
+    @Column({ type: "int", unique: true   })
     number: number;
 
     @Column({ type: "int" })
