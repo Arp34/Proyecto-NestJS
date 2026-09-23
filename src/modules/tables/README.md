@@ -90,4 +90,4 @@ npm run test -- tables
 
 - Expand test coverage (currently they only check that the service/controller are instantiated).
 - Add pagination and filters (by zone or status) to `GET /tables`.
-- Add extra business rules, such as preventing deletion of a table that is `occupied` or `reserved`.
+- Add extra business rules, such as preventing deletion of a table that is `occupied` or `reserved`
