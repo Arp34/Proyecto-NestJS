@@ -2,8 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CategoriesModule } from './modules/categories/categories.module.js';
-import { TablesModule } from './modules/tables/tables.module.js'; 
-
+import { TablesModule } from './modules/tables/tables.module.js';
 
 @Module({
   imports: [
