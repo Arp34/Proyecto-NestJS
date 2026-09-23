@@ -7,7 +7,6 @@ import {
   IsString,
   IsIn,
   MaxLength,
-
 } from 'class-validator';
 import { Transform } from 'class-transformer';
 
