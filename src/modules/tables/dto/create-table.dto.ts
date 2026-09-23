@@ -7,6 +7,7 @@ import {
   IsString,
   IsIn,
   MaxLength,
+  IsUUID,
 } from 'class-validator';
 
 export class CreateTableDto {
