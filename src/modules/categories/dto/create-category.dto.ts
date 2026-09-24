@@ -5,19 +5,13 @@ import {
   MaxLength,
   IsEnum,
 } from 'class-validator';
-<<<<<<< HEAD
-=======
 import { Transform } from 'class-transformer';
->>>>>>> origin/feature/customers
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { CategoryStatus } from '../enum/category-status.enum.js';
 
 export class CreateCategoryDto {
   @ApiProperty({ description: 'Nombre de la categoría', example: 'Postres' })
-<<<<<<< HEAD
-=======
   @Transform(({ value }) => value?.trim())
->>>>>>> origin/feature/customers
   @IsString({ message: 'El nombre debe ser un texto' })
   @IsNotEmpty({ message: 'El nombre no puede estar vacío' })
   @MaxLength(100, { message: 'El nombre no puede exceder los 100 caracteres' })
@@ -27,10 +21,7 @@ export class CreateCategoryDto {
     description: 'Descripción de la categoría',
     example: 'Todos los postres fríos y calientes',
   })
-<<<<<<< HEAD
-=======
   @Transform(({ value }) => value?.trim())
->>>>>>> origin/feature/customers
   @IsString()
   @IsOptional()
   description?: string;
