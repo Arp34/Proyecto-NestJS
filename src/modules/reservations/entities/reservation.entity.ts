@@ -8,7 +8,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
- //import { Customer } from '../../customers/entities/customer.entity.js';
+import { Customer } from '../../customers/entities/customer.entity.js';
 import { Table } from '../../tables/entities/table.entity.js';
 
 export enum ReservationStatus {
@@ -29,14 +29,14 @@ export class Reservation {
   })
   customer_id!: string;
 
- //@ManyToOne(() => Customer, { 
- //  nullable: false,
- //  onDelete: 'RESTRICT' 
- //})
- //@JoinColumn({
- //  name: 'customer_id' 
- //})
- //customer!: Customer;
+  @ManyToOne(() => Customer, { 
+    nullable: false,
+    onDelete: 'RESTRICT' 
+  })
+  @JoinColumn({
+    name: 'customer_id' 
+  })
+  customer!: Customer;
 
   @Column({
     name: 'table_id', 
@@ -45,14 +45,14 @@ export class Reservation {
   })
   table_id?: string;
 
-  //@ManyToOne(() => Table, { 
-  //  nullable: true, 
-  //  onDelete: 'SET NULL',
-  //})
-  //@JoinColumn({ 
-  //  name: 'table_id' 
-  //})
-  //table?: Table;
+  @ManyToOne(() => Table, { 
+    nullable: true, 
+    onDelete: 'SET NULL',
+  })
+  @JoinColumn({ 
+    name: 'table_id' 
+  })
+  table?: Table;
   @Column({ 
     type: 'date' 
   })
