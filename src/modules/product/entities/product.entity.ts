@@ -1,46 +1,53 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 import { productAvailability, productStatus } from '../types/interface.js';
 import { Category } from '../../categories/entities/category.entity.js';
 
 @Entity('product')
 export class Product {
-    @PrimaryGeneratedColumn('uuid')
-    id: string;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-    @Column({ type: 'varchar', length: 120 })
-    name: string;
+  @Column({ type: 'varchar', length: 120 })
+  name: string;
 
-    @Column({ type: 'varchar', length: 500 })
-    description: string;
+  @Column({ type: 'varchar', length: 500 })
+  description: string;
 
-    @Column({ type: 'float' })
-    price: number;
+  @Column({ type: 'float' })
+  price: number;
 
-    @ManyToOne(() => Category, (category) => category.products)
-    @JoinColumn({ name: "category_id" })
-    category: Category;
+  @ManyToOne(() => Category, (category) => category.products)
+  @JoinColumn({ name: 'category_id' })
+  category: Category;
 
-    @Column({
-        type: 'enum',
-        enum: productAvailability,
-        default: productAvailability.AVAILABLE
-    })
-    availability: string;
+  @Column({
+    type: 'enum',
+    enum: productAvailability,
+    default: productAvailability.AVAILABLE,
+  })
+  availability: string;
 
-    @Column({
-        type: 'enum',
-        enum: productStatus,
-        default: productStatus.ACTIVE
-    })
-    status: string;
+  @Column({
+    type: 'enum',
+    enum: productStatus,
+    default: productStatus.ACTIVE,
+  })
+  status: string;
 
-    @Column({ type: 'varchar', length: 500 })
-    imageUrl: string;
+  @Column({ type: 'varchar', length: 500 })
+  imageUrl: string;
 
-    @CreateDateColumn()
-    createdAt: Date;
-    
-    @UpdateDateColumn()
-    updatedAt: Date;
+  @CreateDateColumn()
+  createdAt: Date;
 
+  @UpdateDateColumn()
+  updatedAt: Date;
 }
