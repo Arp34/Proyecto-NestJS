@@ -3,8 +3,8 @@ import { CreateReservationDto } from './dto/create-reservation.dto.js';
 import { UpdateReservationDto } from './dto/update-reservation.dto.js';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-
 import { Reservation } from './entities/reservation.entity.js';
+
 @Injectable()
 export class ReservationsService {
   constructor(
@@ -59,6 +59,6 @@ export class ReservationsService {
   }
 
   remove(id: string) {
-    return this.reservationsRepository.delete( id );
+    return this.reservationsRepository.delete(id);
   }
 }
