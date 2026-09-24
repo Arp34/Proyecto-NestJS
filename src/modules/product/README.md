@@ -11,6 +11,8 @@ product/
 │   └── update-product.dto.ts
 ├── entities/
 │   └── product.entity.ts
+├── types/
+│   └── interface.ts
 ├── product.controller.ts
 ├── product.service.ts
 └── product.module.ts
