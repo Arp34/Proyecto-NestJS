@@ -1,12 +1,16 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { CustomersModule } from './modules/customers/customers.module.js';
 import { CategoriesModule } from './modules/categories/categories.module.js';
 import { TablesModule } from './modules/tables/tables.module.js';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.DB_HOST || 'localhost',
@@ -19,6 +23,8 @@ import { TablesModule } from './modules/tables/tables.module.js';
     }),
     TablesModule,
     CategoriesModule,
+    CustomersModule,
+    TablesModule,
   ],
 })
 export class AppModule {}
