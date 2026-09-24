@@ -1,13 +1,7 @@
 import {
-<<<<<<< HEAD
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-=======
   Column,
   Entity,
   PrimaryGeneratedColumn,
->>>>>>> origin/feature/customers
   CreateDateColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -39,9 +33,5 @@ export class Table {
   createAt: Date;
 
   @UpdateDateColumn()
-<<<<<<< HEAD
-  updatedAt!: Date;
-=======
-  updateAt: Date;
->>>>>>> origin/feature/customers
+  updatedAt: Date;
 }
