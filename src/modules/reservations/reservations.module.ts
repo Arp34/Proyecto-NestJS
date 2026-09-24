@@ -5,9 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Reservation } from './entities/reservation.entity.js';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Reservation]),
-  ],
+  imports: [TypeOrmModule.forFeature([Reservation])],
   controllers: [ReservationsController],
   providers: [ReservationsService],
 })
