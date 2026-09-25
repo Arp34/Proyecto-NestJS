@@ -73,7 +73,6 @@ export class Reservation {
   @Column({
     type: 'enum', // CAMBIE EL VARCHAR POR UN ENUM
     enum: ReservationStatus,
-    default: ReservationStatus.PENDING,
   })
   status!: ReservationStatus; // CAMBIE EL STRING POR  ReservationStatus PARA Q SE MUESTRE  PENDING = 'PEDNDING', CONFIRMED = 'CONFIRMED',CANCELLED = 'CANCELLED',COMPLETED = 'COMPLETED',
 
