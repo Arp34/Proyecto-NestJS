@@ -49,18 +49,17 @@ export class ProductService {
   async update(id: string, updateProductDto: UpdateProductDto) {
     const productUpdate = await this.findOne(id);
 
-    if(updateProductDto.name !== undefined){
+    if (updateProductDto.name !== undefined) {
       updateProductDto.name = updateProductDto.name.trim();
     }
 
-    if(updateProductDto.description !== undefined){
+    if (updateProductDto.description !== undefined) {
       updateProductDto.description = updateProductDto.description.trim();
     }
 
-    if(updateProductDto.imageUrl !== undefined){
+    if (updateProductDto.imageUrl !== undefined) {
       updateProductDto.imageUrl = updateProductDto.imageUrl.trim();
     }
-
 
     this.productRepository.merge(productUpdate, updateProductDto);
 
