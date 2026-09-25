@@ -1,5 +1,14 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsDateString, IsInt, IsOptional, IsString, IsUUID, Min } from 'class-validator';
+import { Transform } from 'class-transformer';
+import {
+  IsDateString,
+  IsInt,
+  IsOptional,
+  IsString,
+  IsUUID,
+  MaxLength,
+  Min,
+} from 'class-validator';
 
 export class CreateReservationDto {
   @ApiProperty({
@@ -40,11 +49,17 @@ export class CreateReservationDto {
   guests: number;
 
   @ApiPropertyOptional({
-    example: 'PENDING',
+    example: 'Mesa cerca de la ventana',
     description: 'Estado de la reserva',
     default: 'PENDING',
   })
   @IsOptional()
+  @Transform(({ value }) => {
+    if (typeof value !== 'string') return value;
+    const trimmed = value.trim();
+    return trimmed === '' ? undefined : trimmed;
+  })
   @IsString()
+  @MaxLength(255)
   notes?: string;
 }
