@@ -6,7 +6,7 @@ import {
   UpdateDateColumn,
   ManyToOne,
   JoinColumn,
-  type Relation
+  type Relation,
 } from 'typeorm';
 import { productAvailability, productStatus } from '../types/interface.js';
 import { Category } from '../../categories/entities/category.entity.js';

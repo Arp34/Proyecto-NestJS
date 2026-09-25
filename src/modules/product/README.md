@@ -59,7 +59,26 @@ category: Category;
 | `update` | Reutiliza `findOne` para traer el producto, copia los campos nuevos con `repository.merge()`, y guarda con `repository.save()`. |
 | `remove` | Reutiliza `findOne` (que ya valida existencia) y elimina con `repository.remove()`. |
 
-## Pendientes conocidos
+## Testing
 
-- Confirmar que `CreateProductDto` incluya `category_id` y que `create()` en el service lo use para asociar la categoría.
-- Confirmar que `product.module.ts` tenga `imports: [TypeOrmModule.forFeature([Product])]`.
+El módulo incluye pruebas unitarias para `product.service.ts` (`product.service.spec.ts`) y `product.controller.ts` (`product.controller.spec.ts`), usando Jest con mocks (repositorio y service simulados, sin tocar la base de datos real).
+
+Para correrlas:
+
+```bash
+npm run test
+```
+
+Para ver el reporte de cobertura (se espera un mínimo de 80%):
+
+```bash
+npm run test:cov
+```
+
+**Captura del resultado de `npm run test`:**
+
+_[ Pega aquí la captura ]_
+
+**Captura del reporte de cobertura (`npm run test:cov`):**
+
+_[ Pega aquí la captura ]_
