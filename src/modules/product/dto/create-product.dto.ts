@@ -7,6 +7,7 @@ import {
   Min,
   IsEnum,
   IsUrl,
+  IsOptional,
 } from 'class-validator';
 import { productAvailability, productStatus } from '../types/interface.js';
 
@@ -53,6 +54,7 @@ export class CreateProductDto {
     default: productAvailability.AVAILABLE,
   })
   @IsEnum(productAvailability)
+  @IsOptional()
   availability: string;
 
   @ApiProperty({
@@ -61,6 +63,7 @@ export class CreateProductDto {
     default: productStatus.ACTIVE,
   })
   @IsEnum(productStatus)
+  @IsOptional()
   status: string;
 
   @ApiProperty({

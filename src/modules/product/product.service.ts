@@ -13,14 +13,18 @@ export class ProductService {
   ) {}
 
   async create(createProductDto: CreateProductDto) {
+    const name = createProductDto.name.trim();
+    const description = createProductDto.description.trim();
+    const imageUrl = createProductDto.imageUrl.trim();
+
     const newProduct = this.productRepository.create({
-      name: createProductDto.name,
-      description: createProductDto.description,
+      name: name,
+      description: description,
       price: createProductDto.price,
       category: { id: createProductDto.category_id },
       availability: createProductDto.availability,
       status: createProductDto.status,
-      imageUrl: createProductDto.imageUrl,
+      imageUrl: imageUrl,
     });
 
     return await this.productRepository.save(newProduct);
