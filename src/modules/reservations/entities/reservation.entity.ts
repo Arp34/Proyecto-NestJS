@@ -14,7 +14,9 @@ import { Table } from '../../tables/entities/table.entity.js';
 export enum ReservationStatus {
   PENDING = 'PENDING',
   CONFIRMED = 'CONFIRMED',
+  CHECKED_IN = 'CHECKED_IN',
   CANCELLED = 'CANCELLED',
+  NO_SHOW = 'NO_SHOW',
   COMPLETED = 'COMPLETED',
 }
 
@@ -23,48 +25,48 @@ export class Reservation {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
-  @Column({ 
+  @Column({
     name: 'customer_id',
-    type: 'uuid' 
+    type: 'uuid',
   })
   customer_id!: string;
 
-  @ManyToOne(() => Customer, { 
+  @ManyToOne(() => Customer, {
     nullable: false,
-    onDelete: 'RESTRICT' 
+    onDelete: 'RESTRICT',
   })
   @JoinColumn({
-    name: 'customer_id' 
+    name: 'customer_id',
   })
   customer!: Customer;
 
   @Column({
-    name: 'table_id', 
-    type: 'uuid', 
-    nullable: true 
+    name: 'table_id',
+    type: 'uuid',
+    nullable: true,
   })
   table_id?: string;
 
-  @ManyToOne(() => Table, { 
-    nullable: true, 
+  @ManyToOne(() => Table, {
+    nullable: true,
     onDelete: 'SET NULL',
   })
-  @JoinColumn({ 
-    name: 'table_id' 
+  @JoinColumn({
+    name: 'table_id',
   })
   table?: Table;
-  @Column({ 
-    type: 'date' 
+  @Column({
+    type: 'date',
   })
   date!: string;
 
-  @Column({ 
-    type: 'time' 
+  @Column({
+    type: 'time',
   })
   time!: string;
 
-  @Column({ 
-    type: 'int' 
+  @Column({
+    type: 'int',
   })
   guests!: number;
 
@@ -81,13 +83,13 @@ export class Reservation {
   })
   notes?: string;
 
-  @CreateDateColumn({ 
-    name: 'created_at' 
+  @CreateDateColumn({
+    name: 'created_at',
   })
   created_at!: Date;
 
-  @UpdateDateColumn({ 
-    name: 'updated_at' 
+  @UpdateDateColumn({
+    name: 'updated_at',
   })
   updated_at!: Date;
 }
