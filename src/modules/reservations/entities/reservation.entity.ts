@@ -80,7 +80,7 @@ export class Reservation {
   @Column({
     type: 'text',
     nullable: true,
-  })      
+  })
   notes?: string;
 
   @CreateDateColumn({
