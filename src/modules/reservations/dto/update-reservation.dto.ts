@@ -9,7 +9,7 @@ export class UpdateReservationDto extends PartialType(CreateReservationDto) {
         description: 'Estado de la reserva',
         example: ReservationStatus.PENDING,
     })
-    
+    //ya
     @IsOptional()
     @IsEnum(ReservationStatus)
     status?: ReservationStatus;
