@@ -7,7 +7,7 @@ export class UpdateReservationDto extends PartialType(CreateReservationDto) {
     @ApiPropertyOptional({
         enum:ReservationStatus,
         description: 'Estado de la reserva',
-        example: ReservationStatus.PENDING
+        example: ReservationStatus.PENDING,
     })
     
     @IsOptional()
