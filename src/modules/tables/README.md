@@ -78,13 +78,14 @@ export class AppModule {}
 
 3. Ejecutar la aplicación y consumir los endpoints descritos arriba (por ejemplo, desde Swagger UI en `/api` si está habilitado).
 
-## Tests
+## Pruebas Unitarias (Tests)
 
-El módulo incluye pruebas unitarias base para el controller y el service:
+El módulo cuenta con una suite completa de pruebas unitarias implementadas con **Jest**, aislando las dependencias mediante mocks para garantizar la fiabilidad de cada capa de forma independiente.
+
+Para ejecutar exclusivamente las pruebas de este módulo, utiliza el siguiente comando:
 
 ```bash
 npm run test -- tables
-```
 
 ## Pendientes / posibles mejoras
 
