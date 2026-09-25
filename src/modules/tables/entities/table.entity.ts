@@ -33,5 +33,5 @@ export class Table {
   createAt: Date;
 
   @UpdateDateColumn()
-  updateAt: Date;
+  updatedAt: Date;
 }
