@@ -26,6 +26,7 @@ import { TablesModule } from './modules/tables/tables.module.js';
     }),
 
     ReservationsModule,
+    TablesModule,
     CategoriesModule,
     CustomersModule,
     TablesModule,
