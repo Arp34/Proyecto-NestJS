@@ -8,7 +8,7 @@ import {
   JoinColumn,
   type Relation,
 } from 'typeorm';
-import { productAvailability, productStatus } from '../types/interface.js';
+import { productAvailability, productStatus } from '../enum/interface.js';
 import { Category } from '../../categories/entities/category.entity.js';
 
 @Entity('product')
