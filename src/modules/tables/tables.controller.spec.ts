@@ -52,7 +52,7 @@ describe('TablesController', () => {
       const dto: CreateTableDto = { number: 1, capacity: 4, zone: 'Terraza' };
       const result = await controller.create(dto);
 
-      expect(service.create).toHaveBeenCalledWith(dto);
+      expect(jest.spyOn(service, 'create')).toHaveBeenCalledWith(dto);
       expect(result).toEqual(mockTable);
     });
   });
@@ -61,7 +61,7 @@ describe('TablesController', () => {
     it('debe retornar un arreglo de mesas', async () => {
       const result = await controller.findAll();
 
-      expect(service.findAll).toHaveBeenCalled();
+      expect(jest.spyOn(service, 'findAll')).toHaveBeenCalled();
       expect(result).toEqual([mockTable]);
     });
   });
@@ -70,7 +70,7 @@ describe('TablesController', () => {
     it('debe retornar una mesa por ID', async () => {
       const result = await controller.findOne(mockTableId);
 
-      expect(service.findOne).toHaveBeenCalledWith(mockTableId);
+      expect(jest.spyOn(service, 'findOne')).toHaveBeenCalledWith(mockTableId);
       expect(result).toEqual(mockTable);
     });
   });
@@ -80,7 +80,10 @@ describe('TablesController', () => {
       const dto: UpdateTableDto = { capacity: 6 };
       const result = await controller.update(mockTableId, dto);
 
-      expect(service.update).toHaveBeenCalledWith(mockTableId, dto);
+      expect(jest.spyOn(service, 'update')).toHaveBeenCalledWith(
+        mockTableId,
+        dto,
+      );
       expect(result).toEqual({ ...mockTable, capacity: 6 });
     });
   });
@@ -89,7 +92,7 @@ describe('TablesController', () => {
     it('debe eliminar una mesa', async () => {
       const result = await controller.remove(mockTableId);
 
-      expect(service.remove).toHaveBeenCalledWith(mockTableId);
+      expect(jest.spyOn(service, 'remove')).toHaveBeenCalledWith(mockTableId);
       expect(result).toBeUndefined();
     });
   });

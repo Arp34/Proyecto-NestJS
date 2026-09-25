@@ -25,7 +25,7 @@ import { TablesModule } from './modules/tables/tables.module.js';
       synchronize: true, // Solo en desarrollo
     }),
 
-ReservationsModule,
+    ReservationsModule,
     TablesModule,
     CategoriesModule,
     CustomersModule,
