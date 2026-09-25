@@ -83,6 +83,10 @@ export class AppModule {}
 El módulo cuenta con una suite completa de pruebas unitarias implementadas con **Jest**, aislando las dependencias mediante mocks para garantizar la fiabilidad de cada capa de forma independiente.
 
 Para ejecutar exclusivamente las pruebas de este módulo, utiliza el siguiente comando:
+ ![Pruebas service ](test-service.png)
+ ![Pruebas controller ](Test-controller.png)
+ ![Texto alternativo](ruta/o/url/de/la-imagen.png)
+ ![Texto alternativo](ruta/o/url/de/la-imagen.png)
 
 ```bash
 npm run test -- tables
