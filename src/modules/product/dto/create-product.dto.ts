@@ -9,7 +9,7 @@ import {
   IsUrl,
   IsOptional,
 } from 'class-validator';
-import { productAvailability, productStatus } from '../types/interface.js';
+import { productAvailability, productStatus } from '../enum/interface.js';
 
 export class CreateProductDto {
   @ApiProperty({
