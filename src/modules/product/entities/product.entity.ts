@@ -6,6 +6,7 @@ import {
   UpdateDateColumn,
   ManyToOne,
   JoinColumn,
+  type Relation
 } from 'typeorm';
 import { productAvailability, productStatus } from '../types/interface.js';
 import { Category } from '../../categories/entities/category.entity.js';
@@ -26,7 +27,7 @@ export class Product {
 
   @ManyToOne(() => Category, (category) => category.products)
   @JoinColumn({ name: 'category_id' })
-  category: Category;
+  category: Relation<Category>;
 
   @Column({
     type: 'enum',

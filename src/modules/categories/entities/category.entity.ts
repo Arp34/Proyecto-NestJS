@@ -5,6 +5,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToMany,
+  Relation,
 } from 'typeorm';
 import { CategoryStatus } from '../enum/category-status.enum.js';
 import { Product } from '../../product/entities/product.entity.js';
@@ -32,7 +33,7 @@ export class Category {
 
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
-
+  
   @OneToMany(() => Product, (product) => product.category)
-  products: Product[];
+  products: Relation<Product>[];
 }
