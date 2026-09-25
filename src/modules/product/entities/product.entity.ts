@@ -22,7 +22,7 @@ export class Product {
   @Column({ type: 'varchar', length: 500 })
   description: string;
 
-  @Column({ type: 'float' })
+  @Column({ type: 'decimal', precision: 10, scale: 2 })
   price: number;
 
   @ManyToOne(() => Category, (category) => category.products)
