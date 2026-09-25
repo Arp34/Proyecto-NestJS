@@ -1,15 +1,17 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { CustomersModule } from './modules/customers/customers.module.js';
+
+import { Table } from './modules/tables/entities/table.entity.js';
+import { Reservation } from './modules/reservations/entities/reservation.entity.js';
+import { ReservationsModule } from './modules/reservations/reservations.module.js';
 import { CategoriesModule } from './modules/categories/categories.module.js';
+import { CustomersModule } from './modules/customers/customers.module.js';
 import { TablesModule } from './modules/tables/tables.module.js';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      isGlobal: true,
-    }),
+    ConfigModule.forRoot({ isGlobal: true }),
 
     TypeOrmModule.forRoot({
       type: 'postgres',
@@ -18,9 +20,12 @@ import { TablesModule } from './modules/tables/tables.module.js';
       username: process.env.DB_USERNAME || 'postgres',
       password: process.env.DB_PASSWORD || 'postgrespassword',
       database: process.env.DB_DATABASE || 'restaurant_db',
+      entities: [Table, Reservation],
       autoLoadEntities: true,
-      synchronize: true, // Sincroniza automáticamente las entidades en PostgreSQL (solo en desarrollo)
+      synchronize: true, // Solo en desarrollo
     }),
+
+    ReservationsModule,
     CategoriesModule,
     CustomersModule,
     TablesModule,

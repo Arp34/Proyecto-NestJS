@@ -28,7 +28,7 @@ tables/
 | `zone`     | `varchar` (máx. 50)                     | Zona del restaurante (ej. "Terraza").              |
 | `status`   | `enum`: `available` \| `occupied` \| `reserved` | Estado actual de la mesa. Por defecto `available`. |
 | `createAt` | `Date`                                   | Fecha de creación (autogenerada).                  |
-| `updateAt` | `Date`                                   | Fecha de última actualización (autogenerada).      |
+| `updatedAt` | `Date`                                   | Fecha de última actualización (autogenerada).      |
 
 > Nota: la entidad se mapea a la tabla `tables` en la base de datos (en plural) porque `table` suele ser una palabra reservada en SQL.
 
