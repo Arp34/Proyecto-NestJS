@@ -16,7 +16,7 @@ export class Product {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ type: 'varchar', length: 120 })
+  @Column({ type: 'varchar', length: 120, unique: true })
   name: string;
 
   @Column({ type: 'varchar', length: 500 })
@@ -34,14 +34,14 @@ export class Product {
     enum: productAvailability,
     default: productAvailability.AVAILABLE,
   })
-  availability: string;
+  availability: productAvailability;
 
   @Column({
     type: 'enum',
     enum: productStatus,
     default: productStatus.ACTIVE,
   })
-  status: string;
+  status: productStatus;
 
   @Column({ type: 'varchar', length: 500 })
   imageUrl: string;
