@@ -8,7 +8,7 @@ import {
   IsEnum,
   IsUrl,
   IsOptional,
-  IsPositive
+  IsPositive,
 } from 'class-validator';
 import { productAvailability, productStatus } from '../enum/interface.js';
 
