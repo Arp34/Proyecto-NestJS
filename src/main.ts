@@ -6,7 +6,8 @@ import { Logger, ValidationPipe } from '@nestjs/common';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // Configuración global de validaciones
+  const logger = new Logger('Bootstrap');
+
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -14,9 +15,6 @@ async function bootstrap() {
       transform: true,
     }),
   );
-
-  // Instanciamos el Logger de NestJS
-  const logger = new Logger('Bootstrap');
 
   // Configuración de Swagger
   const config = new DocumentBuilder()
@@ -29,11 +27,11 @@ async function bootstrap() {
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
-
   SwaggerModule.setup('api/docs', app, document);
 
   const port = process.env.PORT ?? 3000;
 
+  // El listen siempre debe ir al final, después de configurar pipes y middlewares
   await app.listen(port);
 
   logger.log(`API corriendo en: http://localhost:${port}`);

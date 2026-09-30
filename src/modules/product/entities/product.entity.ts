@@ -11,6 +11,7 @@ import {
 import { productAvailability, productStatus } from '../enum/interface.js';
 import { Category } from '../../categories/entities/category.entity.js';
 
+// Product entity definition with TypeORM decorators
 @Entity('product')
 export class Product {
   @PrimaryGeneratedColumn('uuid')
@@ -19,7 +20,7 @@ export class Product {
   @Column({ type: 'varchar', length: 120, unique: true })
   name: string;
 
-  @Column({ type: 'varchar', length: 500 })
+  @Column({ type: 'varchar', length: 500, nullable: true })
   description: string;
 
   @Column({ type: 'decimal', precision: 10, scale: 2 })
@@ -43,7 +44,7 @@ export class Product {
   })
   status: productStatus;
 
-  @Column({ type: 'varchar', length: 500 })
+  @Column({ type: 'varchar', length: 500, nullable: true })
   imageUrl: string;
 
   @CreateDateColumn()

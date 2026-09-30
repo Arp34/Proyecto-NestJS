@@ -10,6 +10,8 @@ import {
   IsOptional,
   IsPositive,
 } from 'class-validator';
+// 1. Importamos Transform desde class-transformer
+import { Transform } from 'class-transformer';
 import { productAvailability, productStatus } from '../enum/interface.js';
 
 export class CreateProductDto {
@@ -20,6 +22,8 @@ export class CreateProductDto {
   @IsNotEmpty({ message: 'El nombre es requerido' })
   @IsString({ message: 'El nombre debe ser una cadena de texto' })
   @Length(2, 120, { message: 'El nombre debe tener entre 2 y 120 caracteres' })
+  // 2. Aplicamos la transformación antes de que class-validator valide el tamaño
+  @Transform(({ value }) => value?.trim())
   name: string;
 
   @ApiProperty({
@@ -31,6 +35,8 @@ export class CreateProductDto {
   @Length(2, 500, {
     message: 'La descripción debe tener entre 2 y 500 caracteres',
   })
+  // 3. Aplicamos la transformación (el operador ?. evita errores si viene undefined)
+  @Transform(({ value }) => value?.trim())
   description: string;
 
   @ApiProperty({
@@ -81,5 +87,7 @@ export class CreateProductDto {
     { protocols: ['http', 'https'] },
     { message: 'La URL de la imagen debe ser una dirección web válida' },
   )
+  // 4. Aplicamos la transformación también aquí
+  @Transform(({ value }) => value?.trim())
   imageUrl: string;
 }

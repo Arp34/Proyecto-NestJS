@@ -12,11 +12,14 @@ export class ProductService {
     private readonly productRepository: Repository<Product>,
   ) {}
 
+  // CRUD operations for Product entity
+
   async create(createProductDto: CreateProductDto) {
     const name = createProductDto.name;
     const description = createProductDto.description;
     const imageUrl = createProductDto.imageUrl;
 
+    // Create a new product entity and save it to the database
     const newProduct = this.productRepository.create({
       name: name,
       description: description,
@@ -34,6 +37,8 @@ export class ProductService {
     return await this.productRepository.find();
   }
 
+  // Find a product by ID with error handling
+
   async findOne(id: string) {
     const product = await this.productRepository.findOneBy({ id });
 
@@ -46,20 +51,10 @@ export class ProductService {
     return product;
   }
 
+  // Update and remove methods for Product entity
+
   async update(id: string, updateProductDto: UpdateProductDto) {
     const productUpdate = await this.findOne(id);
-
-    if (updateProductDto.name !== undefined) {
-      updateProductDto.name = updateProductDto.name.trim();
-    }
-
-    if (updateProductDto.description !== undefined) {
-      updateProductDto.description = updateProductDto.description.trim();
-    }
-
-    if (updateProductDto.imageUrl !== undefined) {
-      updateProductDto.imageUrl = updateProductDto.imageUrl.trim();
-    }
 
     this.productRepository.merge(productUpdate, updateProductDto);
 
