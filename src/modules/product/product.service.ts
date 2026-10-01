@@ -12,22 +12,16 @@ export class ProductService {
     private readonly productRepository: Repository<Product>,
   ) {}
 
-  // CRUD operations for Product entity
-
   async create(createProductDto: CreateProductDto) {
-    const name = createProductDto.name;
-    const description = createProductDto.description;
-    const imageUrl = createProductDto.imageUrl;
-
-    // Create a new product entity and save it to the database
+    // Creamos la entidad mapeando el category_id a la relación de TypeORM
     const newProduct = this.productRepository.create({
-      name: name,
-      description: description,
+      name: createProductDto.name,
+      description: createProductDto.description,
       price: createProductDto.price,
       category: { id: createProductDto.category_id },
       availability: createProductDto.availability,
       status: createProductDto.status,
-      imageUrl: imageUrl,
+      imageUrl: createProductDto.imageUrl,
     });
 
     return await this.productRepository.save(newProduct);
@@ -37,33 +31,37 @@ export class ProductService {
     return await this.productRepository.find();
   }
 
-  // Find a product by ID with error handling
-
   async findOne(id: string) {
     const product = await this.productRepository.findOneBy({ id });
 
     if (!product) {
       throw new NotFoundException({
-        message: `El producto con ID${id} no fue encontrado`,
+        message: `El producto con ID ${id} no fue encontrado`,
         errorCode: 'PRODUCT_NOT_FOUND',
       });
     }
     return product;
   }
 
-  // Update and remove methods for Product entity
-
   async update(id: string, updateProductDto: UpdateProductDto) {
     const productUpdate = await this.findOne(id);
 
-    this.productRepository.merge(productUpdate, updateProductDto);
+    // Separamos el category_id del resto de los datos
+    const { category_id, ...restUpdate } = updateProductDto;
+
+    // Si viene una nueva categoría, la mapeamos a la relación
+    if (category_id) {
+      productUpdate.category = { id: category_id } as any;
+    }
+
+    // Hacemos el merge seguro con el resto de datos
+    this.productRepository.merge(productUpdate, restUpdate);
 
     return await this.productRepository.save(productUpdate);
   }
 
   async remove(id: string) {
     const productRemove = await this.findOne(id);
-
     return await this.productRepository.remove(productRemove);
   }
 }
