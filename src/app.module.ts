@@ -27,6 +27,7 @@ import { ProductModule } from './modules/product/product.module.js';
     }),
 
     ReservationsModule,
+    TablesModule,
     CategoriesModule,
     ProductModule,
     CustomersModule,
