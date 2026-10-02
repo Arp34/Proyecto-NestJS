@@ -14,7 +14,9 @@ import { Table } from '../../tables/entities/table.entity.js';
 export enum ReservationStatus {
   PENDING = 'PENDING',
   CONFIRMED = 'CONFIRMED',
+  CHECKED_IN = 'CHECKED_IN',
   CANCELLED = 'CANCELLED',
+  NO_SHOW = 'NO_SHOW',
   COMPLETED = 'COMPLETED',
 }
 
