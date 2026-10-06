@@ -408,3 +408,42 @@ DELETE /customers/:id
 * Uso de variables de entorno para la configuración de la base de datos.
 * Documentación de la API mediante Swagger.
 
+---
+
+## Evidencia de Pruebas Unitarias
+
+Se implementó una suite de pruebas unitarias para el módulo `Customers` utilizando **Jest**.
+
+Las pruebas fueron realizadas de forma aislada mediante mocks, evitando conexiones a una base de datos PostgreSQL real durante la ejecución de los tests.
+
+### Pruebas del CustomersService
+
+Se validaron los siguientes escenarios:
+
+- Creación exitosa de un cliente.
+- Validación de correo electrónico duplicado mediante `ConflictException`.
+- Consulta de todos los clientes.
+- Consulta de un cliente por UUID.
+- Manejo de cliente inexistente mediante `NotFoundException`.
+- Actualización de un cliente utilizando `preload`.
+- Validación de correo electrónico duplicado durante la actualización.
+- Manejo de ID inexistente durante la actualización.
+- Eliminación de un cliente utilizando `remove`.
+- Manejo de ID inexistente durante la eliminación.
+
+### Pruebas del CustomersController
+
+Se validó que cada método del controlador invoque correctamente el método correspondiente del `CustomersService`:
+
+- `POST /customers` → `create()`
+- `GET /customers` → `findAll()`
+- `GET /customers/:id` → `findOne()`
+- `PATCH /customers/:id` → `update()`
+- `DELETE /customers/:id` → `remove()`
+
+### Ejecución de las pruebas
+
+Las pruebas del módulo se ejecutan mediante:
+
+```bash
+npm run test -- customers

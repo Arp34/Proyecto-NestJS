@@ -3,6 +3,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -18,15 +19,21 @@ export class CustomersService {
   ) {}
 
   async create(createCustomerDto: CreateCustomerDto) {
-    const existingCustomer = await this.customerRepository.findOne({
-      where: {
-        email: createCustomerDto.email,
-      },
-    });
+    const existingCustomer =
+      await this.customerRepository.findOne({
+        where: {
+          email: createCustomerDto.email,
+        },
+      });
+
     if (existingCustomer) {
-      throw new ConflictException('El email ya esta registrado');
+      throw new ConflictException(
+        'El email ya esta registrado',
+      );
     }
-    const customer = this.customerRepository.create(createCustomerDto);
+
+    const customer =
+      this.customerRepository.create(createCustomerDto);
 
     return this.customerRepository.save(customer);
   }
@@ -35,36 +42,67 @@ export class CustomersService {
     return this.customerRepository.find();
   }
 
-  findOne(id: string) {
-    return this.customerRepository.findOneBy({ id });
+  async findOne(id: string) {
+    const customer =
+      await this.customerRepository.findOneBy({ id });
+
+    if (!customer) {
+      throw new NotFoundException(
+        'Cliente no encontrado',
+      );
+    }
+
+    return customer;
   }
 
-  async update(id: string, updateCustomerDto: UpdateCustomerDto) {
+  async update(
+    id: string,
+    updateCustomerDto: UpdateCustomerDto,
+  ) {
     if (updateCustomerDto.email) {
-      const existingCustomer = await this.customerRepository.findOne({
-        where: {
-          email: updateCustomerDto.email,
-        },
-      });
+      const existingCustomer =
+        await this.customerRepository.findOne({
+          where: {
+            email: updateCustomerDto.email,
+          },
+        });
 
-      if (existingCustomer && existingCustomer.id !== id) {
-        throw new ConflictException('El email ya está registrado');
+      if (
+        existingCustomer &&
+        existingCustomer.id !== id
+      ) {
+        throw new ConflictException(
+          'El email ya esta registrado',
+        );
       }
     }
 
-    await this.customerRepository.update(id, updateCustomerDto);
+    const customer =
+      await this.customerRepository.preload({
+        id,
+        ...updateCustomerDto,
+      });
 
-    return this.customerRepository.findOneBy({ id });
+    if (!customer) {
+      throw new NotFoundException(
+        'Cliente no encontrado',
+      );
+    }
+
+    return this.customerRepository.save(customer);
   }
 
   async remove(id: string) {
-    const customer = await this.customerRepository.findOneBy({ id });
+    const customer =
+      await this.customerRepository.findOneBy({ id });
 
     if (!customer) {
-      throw new NotFoundException('Cliente no encontrado');
+      throw new NotFoundException(
+        'Cliente no encontrado',
+      );
     }
 
-    await this.customerRepository.delete(id);
+    await this.customerRepository.remove(customer);
 
     return {
       message: 'Cliente eliminado correctamente',
