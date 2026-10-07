@@ -6,6 +6,9 @@ import { Logger, ValidationPipe } from '@nestjs/common';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  // Prefijo global: POST /api/v1/reservations
+  app.setGlobalPrefix('api/v1');
+
   // Configuración global de validaciones
   app.useGlobalPipes(
     new ValidationPipe({
@@ -15,7 +18,6 @@ async function bootstrap() {
     }),
   );
 
-  // Instanciamos el Logger de NestJS
   const logger = new Logger('Bootstrap');
 
   // Configuración de Swagger
@@ -26,6 +28,7 @@ async function bootstrap() {
     )
     .setVersion('1.0')
     .addTag('tables')
+    .addTag('Reservations', 'Gestión de reservas de mesas')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
@@ -36,7 +39,7 @@ async function bootstrap() {
 
   await app.listen(port);
 
-  logger.log(`API corriendo en: http://localhost:${port}`);
+  logger.log(`API corriendo en: http://localhost:${port}/api/v1`);
   logger.log(`Swagger disponible en: http://localhost:${port}/api/docs`);
 }
 
