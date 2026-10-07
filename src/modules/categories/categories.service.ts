@@ -8,6 +8,8 @@ import { ILike, Repository } from 'typeorm';
 import { CreateCategoryDto } from './dto/create-category.dto.js';
 import { UpdateCategoryDto } from './dto/update-category.dto.js';
 import { Category } from './entities/category.entity.js';
+import { CategoryStatus } from './enum/category-status.enum.js';
+import { UpdateCategoryStatusDto } from './dto/update-category-status.dto.js';
 
 @Injectable()
 export class CategoriesService {
@@ -52,8 +54,26 @@ export class CategoriesService {
     }
   }
 
+  // MODIFICADO: RN-023 (No mostrar inactivos)
   async findAll() {
-    return await this.categoryRepository.find();
+    return await this.categoryRepository.find({
+      where: {
+        status: CategoryStatus.ACTIVE,
+      },
+    });
+  }
+
+  // NUEVO MÉTODO: Cambiar estado
+  async updateStatus(
+    id: string,
+    updateCategoryStatusDto: UpdateCategoryStatusDto,
+  ) {
+    // Reutilizamos tu findOne porque ya lanza el 404 NotFoundException si el ID no existe
+    const category = await this.findOne(id);
+
+    category.status = updateCategoryStatusDto.status;
+
+    return await this.categoryRepository.save(category);
   }
 
   async findOne(id: string) {

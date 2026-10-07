@@ -47,6 +47,7 @@ export class ReservationsService {
       time,
       guests,
       notes,
+      status: ReservationStatus.PENDING,
     });
 
     return this.reservationsRepository.save(reservation);
