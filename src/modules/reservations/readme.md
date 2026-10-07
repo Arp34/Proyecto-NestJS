@@ -21,18 +21,18 @@ src/modules/reservations/
 
 Tabla: `reservations`
 
-| Campo        | Tipo                  | Descripción                                             |
-| ------------ | --------------------- | ------------------------------------------------------- |
-| `id`         | `uuid`                | Identificador (autogenerado).                           |
-| `customer_id`| `uuid`                | Cliente que hace la reserva.                            |
-| `table_id`   | `uuid` (nullable)     | Mesa asignada. Es opcional.                             |
-| `date`       | `date` (`string`)     | Fecha de la reserva, formato `YYYY-MM-DD`.              |
-| `time`       | `time` (`string`)     | Hora de la reserva, formato `HH:mm`.                    |
-| `guests`     | `int`                 | Cantidad de personas.                                   |
-| `status`     | `enum`                | Estado. Por defecto `PENDING`.                          |
-| `notes`      | `text` (nullable)     | Notas adicionales.                                      |
-| `created_at` | `Date`                | Fecha de creación (autogenerada).                       |
-| `updated_at` | `Date`                | Fecha de última actualización (autogenerada).           |
+| Campo         | Tipo              | Descripción                                   |
+| ------------- | ----------------- | --------------------------------------------- |
+| `id`          | `uuid`            | Identificador (autogenerado).                 |
+| `customer_id` | `uuid`            | Cliente que hace la reserva.                  |
+| `table_id`    | `uuid` (nullable) | Mesa asignada. Es opcional.                   |
+| `date`        | `date` (`string`) | Fecha de la reserva, formato `YYYY-MM-DD`.    |
+| `time`        | `time` (`string`) | Hora de la reserva, formato `HH:mm`.          |
+| `guests`      | `int`             | Cantidad de personas.                         |
+| `status`      | `enum`            | Estado. Por defecto `PENDING`.                |
+| `notes`       | `text` (nullable) | Notas adicionales.                            |
+| `created_at`  | `Date`            | Fecha de creación (autogenerada).             |
+| `updated_at`  | `Date`            | Fecha de última actualización (autogenerada). |
 
 ### Estados (`ReservationStatus`)
 
@@ -42,13 +42,13 @@ Tabla: `reservations`
 
 ## Endpoints
 
-| Método   | Ruta                | Descripción                    | Respuestas                     |
-| -------- | ------------------- | ------------------------------ | ------------------------------ |
-| `POST`   | `/reservations`     | Crear una reserva              | `201`, `400`, `404`, `409`     |
-| `GET`    | `/reservations`     | Listar todas las reservas      | `200`                          |
-| `GET`    | `/reservations/:id` | Obtener una reserva por ID     | `200`, `400`, `404`            |
-| `PATCH`  | `/reservations/:id` | Actualizar una reserva         | `200`, `400`, `404`, `409`     |
-| `DELETE` | `/reservations/:id` | Eliminar una reserva           | `204`, `400`, `404`            |
+| Método   | Ruta                | Descripción                | Respuestas                 |
+| -------- | ------------------- | -------------------------- | -------------------------- |
+| `POST`   | `/reservations`     | Crear una reserva          | `201`, `400`, `404`, `409` |
+| `GET`    | `/reservations`     | Listar todas las reservas  | `200`                      |
+| `GET`    | `/reservations/:id` | Obtener una reserva por ID | `200`, `400`, `404`        |
+| `PATCH`  | `/reservations/:id` | Actualizar una reserva     | `200`, `400`, `404`, `409` |
+| `DELETE` | `/reservations/:id` | Eliminar una reserva       | `204`, `400`, `404`        |
 
 Los parámetros `:id` se validan con `ParseUUIDPipe`: un ID que no sea UUID responde `400` en lugar de llegar a la base de datos.
 
@@ -78,6 +78,7 @@ Al consultar, actualizar o eliminar un ID inexistente se responde `404`.
 **Causa:** los marcadores `<<<<<<< HEAD`, `=======` y `>>>>>>> origin/feature/customers` habían quedado dentro de los archivos. `git status` no mostraba archivos en conflicto, lo que indicaba que los marcadores ya estaban commiteados y no había un merge en curso.
 
 **Solución:**
+
 - `create-category.dto.ts`: se conservaron las líneas de `origin/feature/customers` (`import { Transform }` y los dos `@Transform(({ value }) => value?.trim())`).
 - `app.module.ts`: se juntaron los imports y los módulos de ambas ramas (`ReservationsModule`, `CategoriesModule`, `CustomersModule`, `TablesModule`) sin duplicar `CategoriesModule`.
 - `table.entity.ts`: se unificaron los imports de `typeorm` y se eligió un solo nombre para la columna de actualización.
@@ -100,6 +101,7 @@ Al consultar, actualizar o eliminar un ID inexistente se responde `404`.
 **Causa:** había un PostgreSQL instalado localmente (verificado con `sudo ss -tlnp | grep 5432`) ocupando el puerto 5432. Nest conectaba a ese servidor y no al contenedor `restaurant_db`, por lo que la contraseña del `docker-compose.yml` no aplicaba.
 
 **Solución (elegir una):**
+
 - Detener el PostgreSQL local (`sudo systemctl stop postgresql`) y levantar Docker.
 - O mover el contenedor a otro puerto (`"5433:5432"` en `docker-compose.yml` y `DB_PORT=5433` en `.env`).
 
@@ -108,6 +110,7 @@ En ambos casos, `DB_USERNAME`, `DB_PASSWORD` y `DB_DATABASE` del `.env` deben co
 ### 4. Controller: documentación Swagger incorrecta y sin validación de UUID
 
 **Problemas:**
+
 - El summary de `findOne` decía "todas las reservas" y la respuesta 200 decía "Reserva **no** encontrada correctamente".
 - Un ID inválido llegaba a la base de datos y devolvía `500`.
 - Faltaba documentar los errores `400` y `409`.
@@ -116,14 +119,14 @@ En ambos casos, `DB_USERNAME`, `DB_PASSWORD` y `DB_DATABASE` del `.env` deben co
 
 ### 5. Service: errores que no se cumplían
 
-| Problema                                                              | Solución                                                             |
-| --------------------------------------------------------------------- | -------------------------------------------------------------------- |
-| `findOne` devolvía `null` con status 200 si el ID no existía.         | Lanza `NotFoundException`.                                           |
-| `update` usaba `repository.update`: devolvía un `UpdateResult`, no la reserva, y no validaba nada. | Busca la reserva, valida y la guarda con `save`.       |
-| `remove` no fallaba con un ID inexistente.                            | Revisa `result.affected` y lanza `NotFoundException`.                |
-| Un `customer_id` o `table_id` inexistente se guardaba sin error (no hay llaves foráneas). | Se valida que existan antes de guardar.          |
-| No se validaba la capacidad de la mesa.                               | `409` si `guests` supera `capacity`.                                 |
-| No se rechazaban fechas pasadas.                                      | `400` si la fecha y hora ya pasaron.                                 |
+| Problema                                                                                           | Solución                                              |
+| -------------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
+| `findOne` devolvía `null` con status 200 si el ID no existía.                                      | Lanza `NotFoundException`.                            |
+| `update` usaba `repository.update`: devolvía un `UpdateResult`, no la reserva, y no validaba nada. | Busca la reserva, valida y la guarda con `save`.      |
+| `remove` no fallaba con un ID inexistente.                                                         | Revisa `result.affected` y lanza `NotFoundException`. |
+| Un `customer_id` o `table_id` inexistente se guardaba sin error (no hay llaves foráneas).          | Se valida que existan antes de guardar.               |
+| No se validaba la capacidad de la mesa.                                                            | `409` si `guests` supera `capacity`.                  |
+| No se rechazaban fechas pasadas.                                                                   | `400` si la fecha y hora ya pasaron.                  |
 
 ### 6. Errores de tipos con `table_id` y `date`
 
@@ -136,7 +139,7 @@ En ambos casos, `DB_USERNAME`, `DB_PASSWORD` y `DB_DATABASE` del `.env` deben co
 El service inyecta los repositorios de `Table` y `Customer`, por lo que deben registrarse en `reservations.module.ts`:
 
 ```ts
-TypeOrmModule.forFeature([Reservation, Table, Customer])
+TypeOrmModule.forFeature([Reservation, Table, Customer]);
 ```
 
 Para que las validaciones de los DTOs se ejecuten, `main.ts` debe tener:
@@ -153,3 +156,10 @@ app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
 - **Reactivar las relaciones** `@ManyToOne` con `Customer` y `Table` para tener llaves foráneas reales.
 - **Endpoints adicionales:** cancelar una reserva (`PATCH /reservations/:id/cancel`), cambiar estado, consultar disponibilidad, y filtros con paginación en `GET /reservations`.
 - **Actualizar el estado de la mesa** (`RESERVED` / `AVAILABLE`) al crear o cancelar una reserva.
+
+### Cancelación de Reservas (`PATCH /reservations/:id/cancel`)
+
+- **RN-055:** Una reserva solo se puede cancelar si su estado actual es `PENDING` o `CONFIRMED`.
+- **RN-056:** Una reserva en estado `COMPLETED` o ya `CANCELLED` no puede volver a cancelarse (devuelve un error `400 Bad Request`).
+- **RN-057:** Tras la cancelación, el estado de la reserva cambia a `CANCELLED`, lo que libera automáticamente la franja horaria de la mesa en el motor de disponibilidad.
+- **RN-058:** El registro permanece en PostgreSQL con estado `CANCELLED` para auditoría e historial (se aplica un _soft change_, no un borrado físico). Si el ID no existe, devuelve `404 Not Found`.

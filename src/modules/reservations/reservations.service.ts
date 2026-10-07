@@ -100,7 +100,7 @@ export class ReservationsService {
     return this.reservationsRepository.save(reservation);
   }
 
-  // Inicializando en esta Línea a implementar los estados de Reserva
+  // Añado la función o método para cancelar una reserva.
 
   async cancel(id: string) {
     const cancelReservation = await this.findOne(id);
