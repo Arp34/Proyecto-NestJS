@@ -9,64 +9,42 @@ describe('CustomersService', () => {
   let service: CustomersService;
 
   const mockCustomerRepository = {
-    create: jest.fn<
-      (customer: Partial<Customer>) => Customer
-    >(),
+    create: jest.fn<(customer: Partial<Customer>) => Customer>(),
 
-    save: jest.fn<
-      (customer: Customer) => Promise<Customer>
-    >(),
+    save: jest.fn<(customer: Customer) => Promise<Customer>>(),
 
-    find: jest.fn<
-      () => Promise<Customer[]>
-    >(),
+    find: jest.fn<() => Promise<Customer[]>>(),
 
     findOne: jest.fn<
-      (
-        options: {
-          where: {
-            email?: string;
-          };
-        },
-      ) => Promise<Customer | null>
+      (options: {
+        where: {
+          email?: string;
+        };
+      }) => Promise<Customer | null>
     >(),
 
-    findOneBy: jest.fn<
-      (
-        options: {
-          id: string;
-        },
-      ) => Promise<Customer | null>
-    >(),
+    findOneBy: jest.fn<(options: { id: string }) => Promise<Customer | null>>(),
 
-    preload: jest.fn<
-      (
-        customer: Partial<Customer>,
-      ) => Promise<Customer | undefined>
-    >(),
+    preload:
+      jest.fn<(customer: Partial<Customer>) => Promise<Customer | undefined>>(),
 
-    remove: jest.fn<
-      (customer: Customer) => Promise<Customer>
-    >(),
+    remove: jest.fn<(customer: Customer) => Promise<Customer>>(),
   };
 
   beforeEach(async () => {
     jest.clearAllMocks();
 
-    const module: TestingModule =
-      await Test.createTestingModule({
-        providers: [
-          CustomersService,
-          {
-            provide: getRepositoryToken(Customer),
-            useValue: mockCustomerRepository,
-          },
-        ],
-      }).compile();
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [
+        CustomersService,
+        {
+          provide: getRepositoryToken(Customer),
+          useValue: mockCustomerRepository,
+        },
+      ],
+    }).compile();
 
-    service = module.get<CustomersService>(
-      CustomersService,
-    );
+    service = module.get<CustomersService>(CustomersService);
   });
 
   it('should be defined', () => {
@@ -97,21 +75,15 @@ describe('CustomersService', () => {
 
     const result = await service.create(dto);
 
-    expect(
-      mockCustomerRepository.findOne,
-    ).toHaveBeenCalledWith({
+    expect(mockCustomerRepository.findOne).toHaveBeenCalledWith({
       where: {
         email: dto.email,
       },
     });
 
-    expect(
-      mockCustomerRepository.create,
-    ).toHaveBeenCalledWith(dto);
+    expect(mockCustomerRepository.create).toHaveBeenCalledWith(dto);
 
-    expect(
-      mockCustomerRepository.save,
-    ).toHaveBeenCalledWith(customer);
+    expect(mockCustomerRepository.save).toHaveBeenCalledWith(customer);
 
     expect(result).toEqual(customer);
   });
@@ -132,23 +104,15 @@ describe('CustomersService', () => {
       updatedAt: new Date(),
     };
 
-    mockCustomerRepository.findOne.mockResolvedValue(
-      existingCustomer,
-    );
+    mockCustomerRepository.findOne.mockResolvedValue(existingCustomer);
 
-    await expect(
-      service.create(dto),
-    ).rejects.toThrow(
+    await expect(service.create(dto)).rejects.toThrow(
       'El email ya esta registrado',
     );
 
-    expect(
-      mockCustomerRepository.create,
-    ).not.toHaveBeenCalled();
+    expect(mockCustomerRepository.create).not.toHaveBeenCalled();
 
-    expect(
-      mockCustomerRepository.save,
-    ).not.toHaveBeenCalled();
+    expect(mockCustomerRepository.save).not.toHaveBeenCalled();
   });
 
   // FIND ALL
@@ -173,17 +137,13 @@ describe('CustomersService', () => {
       },
     ];
 
-    mockCustomerRepository.find.mockResolvedValue(
-      customers,
-    );
+    mockCustomerRepository.find.mockResolvedValue(customers);
 
     const result = await service.findAll();
 
     expect(result).toEqual(customers);
 
-    expect(
-      mockCustomerRepository.find,
-    ).toHaveBeenCalled();
+    expect(mockCustomerRepository.find).toHaveBeenCalled();
   });
 
   // FIND ONE
@@ -198,15 +158,11 @@ describe('CustomersService', () => {
       updatedAt: new Date(),
     };
 
-    mockCustomerRepository.findOneBy.mockResolvedValue(
-      customer,
-    );
+    mockCustomerRepository.findOneBy.mockResolvedValue(customer);
 
     const result = await service.findOne('uuid-1');
 
-    expect(
-      mockCustomerRepository.findOneBy,
-    ).toHaveBeenCalledWith({
+    expect(mockCustomerRepository.findOneBy).toHaveBeenCalledWith({
       id: 'uuid-1',
     });
 
@@ -214,19 +170,13 @@ describe('CustomersService', () => {
   });
 
   it('should throw NotFoundException if customer does not exist', async () => {
-    mockCustomerRepository.findOneBy.mockResolvedValue(
-      null,
-    );
+    mockCustomerRepository.findOneBy.mockResolvedValue(null);
 
-    await expect(
-      service.findOne('uuid-1'),
-    ).rejects.toThrow(
+    await expect(service.findOne('uuid-1')).rejects.toThrow(
       'Cliente no encontrado',
     );
 
-    expect(
-      mockCustomerRepository.findOneBy,
-    ).toHaveBeenCalledWith({
+    expect(mockCustomerRepository.findOneBy).toHaveBeenCalledWith({
       id: 'uuid-1',
     });
   });
@@ -248,29 +198,18 @@ describe('CustomersService', () => {
       updatedAt: new Date(),
     };
 
-    mockCustomerRepository.preload.mockResolvedValue(
-      updatedCustomer,
-    );
+    mockCustomerRepository.preload.mockResolvedValue(updatedCustomer);
 
-    mockCustomerRepository.save.mockResolvedValue(
-      updatedCustomer,
-    );
+    mockCustomerRepository.save.mockResolvedValue(updatedCustomer);
 
-    const result = await service.update(
-      'uuid-1',
-      updateDto,
-    );
+    const result = await service.update('uuid-1', updateDto);
 
-    expect(
-      mockCustomerRepository.preload,
-    ).toHaveBeenCalledWith({
+    expect(mockCustomerRepository.preload).toHaveBeenCalledWith({
       id: 'uuid-1',
       ...updateDto,
     });
 
-    expect(
-      mockCustomerRepository.save,
-    ).toHaveBeenCalledWith(updatedCustomer);
+    expect(mockCustomerRepository.save).toHaveBeenCalledWith(updatedCustomer);
 
     expect(result).toEqual(updatedCustomer);
   });
@@ -289,23 +228,15 @@ describe('CustomersService', () => {
       updatedAt: new Date(),
     };
 
-    mockCustomerRepository.findOne.mockResolvedValue(
-      existingCustomer,
-    );
+    mockCustomerRepository.findOne.mockResolvedValue(existingCustomer);
 
-    await expect(
-      service.update('uuid-1', updateDto),
-    ).rejects.toThrow(
+    await expect(service.update('uuid-1', updateDto)).rejects.toThrow(
       'El email ya esta registrado',
     );
 
-    expect(
-      mockCustomerRepository.preload,
-    ).not.toHaveBeenCalled();
+    expect(mockCustomerRepository.preload).not.toHaveBeenCalled();
 
-    expect(
-      mockCustomerRepository.save,
-    ).not.toHaveBeenCalled();
+    expect(mockCustomerRepository.save).not.toHaveBeenCalled();
   });
 
   it('should throw NotFoundException if update id does not exist', async () => {
@@ -313,26 +244,18 @@ describe('CustomersService', () => {
       name: 'Juan actualizado',
     };
 
-    mockCustomerRepository.preload.mockResolvedValue(
-      undefined,
-    );
+    mockCustomerRepository.preload.mockResolvedValue(undefined);
 
-    await expect(
-      service.update('uuid-1', updateDto),
-    ).rejects.toThrow(
+    await expect(service.update('uuid-1', updateDto)).rejects.toThrow(
       'Cliente no encontrado',
     );
 
-    expect(
-      mockCustomerRepository.preload,
-    ).toHaveBeenCalledWith({
+    expect(mockCustomerRepository.preload).toHaveBeenCalledWith({
       id: 'uuid-1',
       ...updateDto,
     });
 
-    expect(
-      mockCustomerRepository.save,
-    ).not.toHaveBeenCalled();
+    expect(mockCustomerRepository.save).not.toHaveBeenCalled();
   });
 
   // REMOVE
@@ -347,25 +270,17 @@ describe('CustomersService', () => {
       updatedAt: new Date(),
     };
 
-    mockCustomerRepository.findOneBy.mockResolvedValue(
-      customer,
-    );
+    mockCustomerRepository.findOneBy.mockResolvedValue(customer);
 
-    mockCustomerRepository.remove.mockResolvedValue(
-      customer,
-    );
+    mockCustomerRepository.remove.mockResolvedValue(customer);
 
     const result = await service.remove('uuid-1');
 
-    expect(
-      mockCustomerRepository.findOneBy,
-    ).toHaveBeenCalledWith({
+    expect(mockCustomerRepository.findOneBy).toHaveBeenCalledWith({
       id: 'uuid-1',
     });
 
-    expect(
-      mockCustomerRepository.remove,
-    ).toHaveBeenCalledWith(customer);
+    expect(mockCustomerRepository.remove).toHaveBeenCalledWith(customer);
 
     expect(result).toEqual({
       message: 'Cliente eliminado correctamente',
@@ -373,18 +288,12 @@ describe('CustomersService', () => {
   });
 
   it('should throw NotFoundException if remove id does not exist', async () => {
-    mockCustomerRepository.findOneBy.mockResolvedValue(
-      null,
-    );
+    mockCustomerRepository.findOneBy.mockResolvedValue(null);
 
-    await expect(
-      service.remove('uuid-1'),
-    ).rejects.toThrow(
+    await expect(service.remove('uuid-1')).rejects.toThrow(
       'Cliente no encontrado',
     );
 
-    expect(
-      mockCustomerRepository.remove,
-    ).not.toHaveBeenCalled();
+    expect(mockCustomerRepository.remove).not.toHaveBeenCalled();
   });
 });

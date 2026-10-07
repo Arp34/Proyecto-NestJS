@@ -1,5 +1,9 @@
+---
+title: Customers Module
+description: Módulo para administrar clientes del restaurante con NestJS, TypeORM y PostgreSQL.
+---
 
-# Customers Module
+#### Customers Module
 
 ## Descripción
 
@@ -446,4 +450,71 @@ Se validó que cada método del controlador invoque correctamente el método cor
 Las pruebas del módulo se ejecutan mediante:
 
 ```bash
+
 npm run test -- customers
+```
+
+``` text
+
+src/customers/evidence-test-service.png
+
+```
+### Evidencia de Pruebas Unitarias
+
+Se implementó una suite de pruebas unitarias para el módulo Customers utilizando Jest y mocks de TypeORM, evitando conexiones reales a PostgreSQL.
+
+Pruebas del CustomersService
+- Creación exitosa de un cliente.
+- Email duplicado → ConflictException (409).
+- Consulta de todos los clientes.
+- Consulta por UUID.
+- Cliente inexistente → NotFoundException (404).
+- Actualización mediante preload().
+- Email duplicado durante actualización → ConflictException (409).
+- ID inexistente durante actualización → NotFoundException (404).
+- Eliminación mediante remove().
+- ID inexistente durante eliminación → NotFoundException (404).
+
+
+### Pruebas del CustomersController
+
+Se validó que cada método del controlador delegue correctamente en CustomersService:
+
+- POST /customers → create()
+- GET /customers → findAll()
+- GET /customers/:id → findOne()
+- PATCH /customers/:id → update()
+- DELETE /customers/:id → remove()
+
+
+### Mock del repositorio
+
+El repositorio de Customer se reemplaza mediante getRepositoryToken(Customer). Los métodos simulados son:
+
+find()
+findOne()
+findOneBy()
+create()
+save()
+preload()
+remove()
+
+### Ejecucion
+
+npm run test -- customers
+
+resultado esperado
+
+Test Suites: 2 passed, 2 total
+Tests:       17 passed, 17 total
+
+
+### Verificaciones finales
+
+npm run test -- customers
+npm run build
+npm run lint
+
+
+
+

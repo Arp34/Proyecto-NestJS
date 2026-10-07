@@ -9,45 +9,37 @@ import { UpdateCustomerDto } from './dto/update-customer.dto.js';
 describe('CustomersController', () => {
   let controller: CustomersController;
 
-const mockCustomersService = {
-  create: jest.fn<
-    (dto: Partial<CreateCustomerDto>) => Promise<Customer>
-  >(),
+  const mockCustomersService = {
+    create: jest.fn<(dto: Partial<CreateCustomerDto>) => Promise<Customer>>(),
 
-  findAll: jest.fn<
-    () => Promise<Customer[]>
-  >(),
+    findAll: jest.fn<() => Promise<Customer[]>>(),
 
-  findOne: jest.fn<
-    (id: string) => Promise<Customer | null>
-  >(),
+    findOne: jest.fn<(id: string) => Promise<Customer | null>>(),
 
-  update: jest.fn<
-    (
-      id: string,
-      dto: Partial<UpdateCustomerDto>,
-    ) => Promise<Customer | null>>(),
+    update:
+      jest.fn<
+        (
+          id: string,
+          dto: Partial<UpdateCustomerDto>,
+        ) => Promise<Customer | null>
+      >(),
 
-  remove: jest.fn<
-    (id: string) => Promise<{ message: string }>>(),
-};
+    remove: jest.fn<(id: string) => Promise<{ message: string }>>(),
+  };
   beforeEach(async () => {
     jest.clearAllMocks();
 
-    const module: TestingModule =
-      await Test.createTestingModule({
-        controllers: [CustomersController],
-        providers: [
-          {
-            provide: CustomersService,
-            useValue: mockCustomersService,
-          },
-        ],
-      }).compile();
+    const module: TestingModule = await Test.createTestingModule({
+      controllers: [CustomersController],
+      providers: [
+        {
+          provide: CustomersService,
+          useValue: mockCustomersService,
+        },
+      ],
+    }).compile();
 
-    controller = module.get<CustomersController>(
-      CustomersController,
-    );
+    controller = module.get<CustomersController>(CustomersController);
   });
 
   it('should be defined', () => {
@@ -88,7 +80,7 @@ const mockCustomersService = {
         phone: '3001234567',
         email: 'juan@gmail.com',
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       },
       {
         id: 'uuid-2',
@@ -96,7 +88,7 @@ const mockCustomersService = {
         phone: '3009876543',
         email: 'pedro@gmail.com',
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       },
     ];
 
@@ -122,9 +114,7 @@ const mockCustomersService = {
 
     const result = await controller.findOne('uuid-1');
 
-    expect(mockCustomersService.findOne).toHaveBeenCalledWith(
-      'uuid-1',
-    );
+    expect(mockCustomersService.findOne).toHaveBeenCalledWith('uuid-1');
 
     expect(result).toEqual(customer);
   });
@@ -146,10 +136,7 @@ const mockCustomersService = {
 
     mockCustomersService.update.mockResolvedValue(customer);
 
-    const result = await controller.update(
-      'uuid-1',
-      updateDto,
-    );
+    const result = await controller.update('uuid-1', updateDto);
 
     expect(mockCustomersService.update).toHaveBeenCalledWith(
       'uuid-1',
@@ -168,9 +155,7 @@ const mockCustomersService = {
 
     const result = await controller.remove('uuid-1');
 
-    expect(mockCustomersService.remove).toHaveBeenCalledWith(
-      'uuid-1',
-    );
+    expect(mockCustomersService.remove).toHaveBeenCalledWith('uuid-1');
 
     expect(result).toEqual(response);
   });
