@@ -5,7 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
-import { DataSource, EntityManager, Not, Repository } from 'typeorm';
+import { DataSource, EntityManager, In, Not, Repository } from 'typeorm';
 import {
   CreateReservationDto,
   CustomerDataDto,
@@ -48,7 +48,6 @@ export class ReservationsService {
     this.ensureNotInPast(date, time); // RN-043
 
     return this.dataSource.transaction(async (manager) => {
-      // Bloquea la mesa: peticiones simultáneas sobre ella se ejecutan en fila
       const table = await this.lockTableAndCheckCapacity(
         manager,
         table_id,
@@ -94,32 +93,68 @@ export class ReservationsService {
   }
 
   async update(id: string, dto: UpdateReservationDto) {
+    if (Object.values(dto).every((v) => v === undefined)) {
+      throw new BadRequestException(
+        'Debes enviar al menos un campo para actualizar',
+      );
+    }
+
     return this.dataSource.transaction(async (manager) => {
-      const reservation = await manager.findOne(Reservation, { where: { id } });
+      const reservation = await manager.findOne(Reservation, {
+        where: { id },
+        lock: { mode: 'pessimistic_write' },
+      });
       if (!reservation) {
         throw new NotFoundException(`Reserva con id ${id} no encontrada`);
       }
 
+      // RN-051
+      if (
+        reservation.status !== ReservationStatus.PENDING &&
+        reservation.status !== ReservationStatus.CONFIRMED
+      ) {
+        throw new BadRequestException(
+          `No se puede modificar una reserva en estado ${reservation.status}`,
+        );
+      }
+
+      // Valores finales = actuales + cambios
       const table_id = dto.table_id ?? reservation.table_id;
+      if (!table_id) {
+        throw new BadRequestException(
+          'La reserva no tiene mesa asignada; envía table_id para asignarle una',
+        );
+      }
       const date = (dto.date ?? reservation.date).slice(0, 10);
       const time = dto.time ?? reservation.time;
       const guests = dto.guests ?? reservation.guests;
 
-      if (dto.date || dto.time) {
+      const tableChanged =
+        dto.table_id !== undefined && dto.table_id !== reservation.table_id;
+      const scheduleChanged = dto.date !== undefined || dto.time !== undefined;
+      const guestsChanged = dto.guests !== undefined;
+
+      // RN-054
+      if (scheduleChanged) {
         this.ensureNotInPast(date, time);
       }
 
-      if (dto.customer_id) {
-        await this.resolveCustomer(manager, dto.customer_id);
+      // RN-053
+      if (tableChanged || guestsChanged || scheduleChanged) {
+        await this.lockTableAndCheckCapacity(manager, table_id, guests);
       }
 
-      if (table_id) {
-        await this.lockTableAndCheckCapacity(manager, table_id, guests);
-        // Se excluye la propia reserva para que no choque consigo misma
+      // RN-052 (se excluye la propia reserva)
+      if (tableChanged || scheduleChanged) {
         await this.ensureNoConflict(manager, table_id, date, time, id);
       }
 
-      Object.assign(reservation, dto);
+      reservation.table_id = table_id;
+      reservation.date = date;
+      reservation.time = time;
+      reservation.guests = guests;
+      if (dto.notes !== undefined) reservation.notes = dto.notes;
+
       return manager.save(reservation);
     });
   }
@@ -132,7 +167,7 @@ export class ReservationsService {
     }
   }
 
-  //  Validaciones internas 
+  // Validaciones internas
 
   private async lockTableAndCheckCapacity(
     manager: EntityManager,
@@ -197,8 +232,12 @@ export class ReservationsService {
       where: {
         table_id,
         date,
-        // Una reserva cancelada libera la mesa
-        status: Not(ReservationStatus.CANCELLED),
+        // Solo las reservas activas ocupan la mesa
+        status: In([
+          ReservationStatus.PENDING,
+          ReservationStatus.CONFIRMED,
+          ReservationStatus.CHECKED_IN,
+        ]),
         ...(excludeId ? { id: Not(excludeId) } : {}),
       },
     });

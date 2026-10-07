@@ -53,19 +53,28 @@ export class ReservationsController {
   }
 
   @Patch(':id')
-  @ApiOperation({
-    summary: 'Actualizar una reserva por ID',
-    description: 'Actualiza la reserva y vuelve a validar capacidad y disponibilidad',
-  })
-  @ApiResponse({ status: 404, description: 'Reserva no encontrada' })
-  @ApiResponse({ status: 409, description: 'La mesa ya está reservada en ese horario' })
-  update(
-    @Param('id', ParseUUIDPipe) id: string,
-    @Body() updateReservationDto: UpdateReservationDto,
-  ) {
-    return this.reservationsService.update(id, updateReservationDto);
-  }
-
+@ApiOperation({
+  summary: 'Actualizar una reserva por ID',
+  description:
+    'Permite cambiar fecha, hora, número de personas, mesa o notas. Solo aplica a reservas PENDING o CONFIRMED y vuelve a validar capacidad y disponibilidad.',
+})
+@ApiResponse({ status: 200, description: 'Reserva actualizada' })
+@ApiResponse({
+  status: 400,
+  description:
+    'Body vacío, fecha pasada, capacidad excedida o reserva en estado no modificable',
+})
+@ApiResponse({ status: 404, description: 'Reserva o mesa no encontrada' })
+@ApiResponse({
+  status: 409,
+  description: 'La mesa ya está reservada en ese horario',
+})
+update(
+  @Param('id', ParseUUIDPipe) id: string,
+  @Body() updateReservationDto: UpdateReservationDto,
+) {
+  return this.reservationsService.update(id, updateReservationDto);
+}
   @Delete(':id')
   @HttpCode(204)
   @ApiOperation({ summary: 'Eliminar una reserva por ID' })
