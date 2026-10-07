@@ -100,6 +100,21 @@ export class ReservationsService {
     return this.reservationsRepository.save(reservation);
   }
 
+  // Inicializando en esta Línea a implementar los estados de REserva
+
+  async patch(id: string, UpdateReservationDto: UpdateReservationDto) {
+    const reservationU = await this.findOne(id);
+
+    if (
+      reservationU.status === 'PENDING' ||
+      reservationU.status === 'CONFIRMED'
+    ) {
+      throw new BadRequestException(
+        'No se puede cancelar una reserva completada o ya cancelada.',
+      );
+    }
+  }
+
   async remove(id: string): Promise<void> {
     const result = await this.reservationsRepository.delete(id);
 
