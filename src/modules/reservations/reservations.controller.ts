@@ -46,6 +46,10 @@ export class ReservationsController {
     summary: 'Actualizar por ID',
     description: 'Se actualizara la reserva por medio del ID',
   })
+  @Patch(':id/cancel')
+  async cancel(@Param('id') id: string) {
+    return this.reservationsService.cancel(id);
+  }
   update(
     @Param('id') id: string,
     @Body() updateReservationDto: UpdateReservationDto,
