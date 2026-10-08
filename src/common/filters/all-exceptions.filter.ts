@@ -27,12 +27,12 @@ export class AllExceptionsFilter implements ExceptionFilter {
 
       // Si es un error de validación, exceptionResponse.message es un array. Lo extraemos.
       message = exceptionResponse?.message || exception.message;
-    } 
+    }
     // 2. Manejo de violaciones únicas de TypeORM (PostgreSQL error 23505)
     else if (exception?.code === '23505') {
       statusCode = HttpStatus.CONFLICT; // 409
       message = 'El registro ya existe en la base de datos';
-    } 
+    }
     // 3. Manejo de errores desconocidos (Crash reales)
     else {
       this.logger.error(
