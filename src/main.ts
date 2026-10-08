@@ -10,14 +10,14 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   // 1. Prefijo Global Base
-  app.setGlobalPrefix('api')
+  app.setGlobalPrefix('api');
 
   // 2. Habilitar Versionado Nativo de NestJS (Requerimiento Técnico)
 
   app.enableVersioning({
     type: VersioningType.URI,
-    defaultVersion:'1'
-  })
+    defaultVersion: '1',
+  });
 
   // Registrar globalmente el Filtro de Excepciones
   app.useGlobalFilters(new AllExceptionsFilter());
