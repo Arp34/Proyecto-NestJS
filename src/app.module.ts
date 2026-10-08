@@ -19,10 +19,10 @@ function validateEnv(config: Record<string, unknown>) {
     'DB_DATABASE',
   ];
 
-  const missing = required.filter(
-    (key) => !config[key] || String(config[key]).trim() === '',
-  );
-
+  const missing = required.filter((key) => {
+    const value = config[key];
+    return typeof value !== 'string' || value.trim() === '';
+  });
   if (missing.length > 0) {
     throw new Error(
       `Faltan variables de entorno críticas: ${missing.join(', ')}. ` +
