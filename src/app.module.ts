@@ -11,6 +11,7 @@ import { TablesModule } from './modules/tables/tables.module.js';
 import { ProductModule } from './modules/product/product.module.js';
 
 import { LoggerMiddleware } from './common/middleware/logger.middleware.js';
+import { AuthModule } from './modules/auth/auth.module.js';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { LoggerMiddleware } from './common/middleware/logger.middleware.js';
     CategoriesModule,
     ProductModule,
     CustomersModule,
+    AuthModule,
   ],
 })
 export class AppModule implements NestModule {
