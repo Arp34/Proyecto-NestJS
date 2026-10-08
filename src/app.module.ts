@@ -10,8 +10,6 @@ import { CustomersModule } from './modules/customers/customers.module.js';
 import { TablesModule } from './modules/tables/tables.module.js';
 import { ProductModule } from './modules/product/product.module.js';
 
-
-
 function validateEnv(config: Record<string, unknown>) {
   const required = [
     'DB_HOST',
@@ -27,7 +25,7 @@ function validateEnv(config: Record<string, unknown>) {
 
   if (missing.length > 0) {
     throw new Error(
-       `Faltan variables de entorno críticas: ${missing.join(', ')}. ` +
+      `Faltan variables de entorno críticas: ${missing.join(', ')}. ` +
         `Defínelas en el archivo .env o en el entorno del sistema.`,
     );
   }
@@ -37,7 +35,7 @@ function validateEnv(config: Record<string, unknown>) {
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ 
+    ConfigModule.forRoot({
       isGlobal: true,
       validate: validateEnv,
     }),
