@@ -9,6 +9,7 @@ import { CategoriesModule } from './modules/categories/categories.module.js';
 import { CustomersModule } from './modules/customers/customers.module.js';
 import { TablesModule } from './modules/tables/tables.module.js';
 import { ProductModule } from './modules/product/product.module.js';
+import { PublicMenuModule } from './modules/public-menu/public-menu.module.js';
 
 @Module({
   imports: [
@@ -31,7 +32,9 @@ import { ProductModule } from './modules/product/product.module.js';
     CategoriesModule,
     ProductModule,
     CustomersModule,
-    TablesModule,
+    PublicMenuModule,
+    
+    
   ],
 })
 export class AppModule {}
