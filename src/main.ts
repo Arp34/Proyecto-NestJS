@@ -1,13 +1,26 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module.js';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { Logger, ValidationPipe } from '@nestjs/common';
+import { Logger, ValidationPipe, VersioningType } from '@nestjs/common';
+
+// Importamos el nuevo filtro de excepciones
+import { AllExceptionsFilter } from './common/filters/all-exceptions.filter.js';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   // Prefijo global: POST /api/v1/reservations
   app.setGlobalPrefix('api/v1');
+
+  // 2. Habilitar Versionado Nativo de NestJS (Requerimiento Técnico)
+
+  app.enableVersioning({
+    type: VersioningType.URI,
+    defaultVersion: '1',
+  });
+
+  // Registrar globalmente el Filtro de Excepciones
+  app.useGlobalFilters(new AllExceptionsFilter());
 
   // Configuración global de validaciones
   app.useGlobalPipes(
