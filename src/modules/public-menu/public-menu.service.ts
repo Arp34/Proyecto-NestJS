@@ -5,6 +5,7 @@ import { Category } from '../categories/entities/category.entity.js';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CategoryStatus } from '../categories/enum/category-status.enum.js';
+import { productStatus } from '../product/enum/interface.js';
 
 @Injectable()
 export class PublicMenuService {
@@ -14,14 +15,20 @@ export class PublicMenuService {
     private readonly categoryRepository: Repository<Category>,
   ) {}
 
-  async findMenu() {
-    return await this.categoryRepository.find({
-      relations: {
-        products: true
-      }
+ async findMenu() {
+  return await this.categoryRepository
+    .createQueryBuilder('category')
+    .leftJoinAndSelect(
+      'category.products',
+      'product',
+      'product.status = :productStatus',
+      { productStatus: productStatus.ACTIVE },
+    )
+    .where('category.status = :categoryStatus', {
+      categoryStatus: CategoryStatus.ACTIVE,
     })
-  }
-
+    .getMany();
+}
 
 
   create(createPublicMenuDto: CreatePublicMenuDto) {
