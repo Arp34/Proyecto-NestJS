@@ -3,12 +3,14 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { CreateCustomerDto } from './dto/create-customer.dto.js';
 import { UpdateCustomerDto } from './dto/update-customer.dto.js';
 import { Customer } from './entities/customer.entity.js';
+import { instanceToPlain } from 'class-transformer';
 
 @Injectable()
 export class CustomersService {
@@ -23,9 +25,11 @@ export class CustomersService {
         email: createCustomerDto.email,
       },
     });
+
     if (existingCustomer) {
       throw new ConflictException('El email ya esta registrado');
     }
+
     const customer = this.customerRepository.create(createCustomerDto);
 
     return this.customerRepository.save(customer);
@@ -35,8 +39,14 @@ export class CustomersService {
     return this.customerRepository.find();
   }
 
-  findOne(id: string) {
-    return this.customerRepository.findOneBy({ id });
+  async findOne(id: string) {
+    const customer = await this.customerRepository.findOneBy({ id });
+
+    if (!customer) {
+      throw new NotFoundException('Cliente no encontrado');
+    }
+
+    return customer;
   }
 
   async update(id: string, updateCustomerDto: UpdateCustomerDto) {
@@ -48,13 +58,20 @@ export class CustomersService {
       });
 
       if (existingCustomer && existingCustomer.id !== id) {
-        throw new ConflictException('El email ya está registrado');
+        throw new ConflictException('El email ya esta registrado');
       }
     }
 
-    await this.customerRepository.update(id, updateCustomerDto);
+    const customer = await this.customerRepository.preload({
+      id,
+      ...instanceToPlain(updateCustomerDto),
+    });
 
-    return this.customerRepository.findOneBy({ id });
+    if (!customer) {
+      throw new NotFoundException('Cliente no encontrado');
+    }
+
+    return this.customerRepository.save(customer);
   }
 
   async remove(id: string) {
@@ -64,7 +81,7 @@ export class CustomersService {
       throw new NotFoundException('Cliente no encontrado');
     }
 
-    await this.customerRepository.delete(id);
+    await this.customerRepository.remove(customer);
 
     return {
       message: 'Cliente eliminado correctamente',
