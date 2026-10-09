@@ -21,6 +21,8 @@ async function bootstrap() {
 
   // Registrar globalmente el Filtro de Excepciones
   app.useGlobalFilters(new AllExceptionsFilter());
+  // Prefijo global: las rutas quedan como /api/v1/tables/...
+  app.setGlobalPrefix('api/v1');
 
   // Configuración global de validaciones
   app.useGlobalPipes(
