@@ -13,14 +13,14 @@ import {
 export class CreateReservationDto {
   @ApiProperty({
     example: '550e8400-e29b-41d4-a716-446655440000',
-    description: 'ID del cliente',
+    description: 'ID del cliente (UUID)',
   })
   @IsUUID()
   customer_id: string;
 
   @ApiPropertyOptional({
     example: '550e8400-e29b-41d4-a716-446655440001',
-    description: 'ID de la mesa',
+    description: 'ID de la mesa asignada (UUID)',
   })
   @IsOptional()
   @IsUUID()
@@ -28,21 +28,21 @@ export class CreateReservationDto {
 
   @ApiProperty({
     example: '2026-09-30',
-    description: 'Fecha de la reserva',
+    description: 'Fecha de la reserva (YYYY-MM-DD)',
   })
   @IsDateString()
   date: string;
 
   @ApiProperty({
     example: '19:30',
-    description: 'Hora de la reserva',
+    description: 'Hora de la reserva (HH:mm)',
   })
   @IsString()
   time: string;
 
   @ApiProperty({
     example: 4,
-    description: 'Cantidad de personas',
+    description: 'Cantidad de comensales',
   })
   @IsInt()
   @Min(1)
@@ -50,8 +50,7 @@ export class CreateReservationDto {
 
   @ApiPropertyOptional({
     example: 'Mesa cerca de la ventana',
-    description: 'Estado de la reserva',
-    default: 'PENDING',
+    description: 'Notas o peticiones especiales del cliente',
   })
   @IsOptional()
   @Transform(({ value }) => {
