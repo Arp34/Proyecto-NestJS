@@ -1,6 +1,6 @@
 export enum productAvailability {
   AVAILABLE = 'AVAILABLE',
-  SOLD_OUT = 'SOLD_OUT',
+  UNAVAILABLE = 'UNAVAILABLE',
 }
 
 export enum productStatus {
