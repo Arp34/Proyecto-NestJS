@@ -14,7 +14,6 @@ describe('ProductController', () => {
     price: 100,
   };
 
-  // Mock simulado de ProductService
   const mockProductService = () => ({
     create: jest.fn(),
     findAll: jest.fn(),
@@ -49,6 +48,7 @@ describe('ProductController', () => {
 
       const result = await controller.create(createDto as any);
 
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(service.create).toHaveBeenCalledWith(createDto);
       expect(result).toEqual(mockProduct);
     });
@@ -61,6 +61,7 @@ describe('ProductController', () => {
 
       const result = await controller.findAll();
 
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(service.findAll).toHaveBeenCalled();
       expect(result).toEqual(productsArray);
     });
@@ -72,6 +73,7 @@ describe('ProductController', () => {
 
       const result = await controller.findOne(mockProduct.id);
 
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(service.findOne).toHaveBeenCalledWith(mockProduct.id);
       expect(result).toEqual(mockProduct);
     });
@@ -85,6 +87,7 @@ describe('ProductController', () => {
 
       const result = await controller.update(mockProduct.id, updateDto as any);
 
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(service.update).toHaveBeenCalledWith(
         mockProduct.id,
         expect.objectContaining(updateDto),
@@ -99,6 +102,7 @@ describe('ProductController', () => {
 
       const result = await controller.remove(mockProduct.id);
 
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(service.remove).toHaveBeenCalledWith(mockProduct.id);
       expect(result).toEqual(mockProduct);
     });
