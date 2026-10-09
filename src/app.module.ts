@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
@@ -9,6 +9,7 @@ import { CategoriesModule } from './modules/categories/categories.module.js';
 import { CustomersModule } from './modules/customers/customers.module.js';
 import { TablesModule } from './modules/tables/tables.module.js';
 import { ProductModule } from './modules/product/product.module.js';
+
 
 function validateEnv(config: Record<string, unknown>) {
   const required = [
@@ -32,6 +33,8 @@ function validateEnv(config: Record<string, unknown>) {
 
   return config;
 }
+import { LoggerMiddleware } from './common/middleware/logger.middleware.js';
+import { AuthModule } from './modules/auth/auth.module.js';
 
 @Module({
   imports: [
@@ -57,7 +60,11 @@ function validateEnv(config: Record<string, unknown>) {
     CategoriesModule,
     ProductModule,
     CustomersModule,
-    TablesModule,
+    AuthModule,
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(LoggerMiddleware).forRoutes('*');
+  }
+}

@@ -9,8 +9,6 @@ import { jest } from '@jest/globals';
 describe('CategoriesService', () => {
   let service: CategoriesService;
 
-  // ¡Cero "any"! Usamos tu idea: inicializamos los espías con funciones y datos falsos
-  // para que TypeScript infiera exactamente las entradas y salidas.
   const mockCategoryRepository = {
     find: jest.fn(async (): Promise<Category[]> => []),
     findOne: jest.fn(async (): Promise<Category | null> => null),
