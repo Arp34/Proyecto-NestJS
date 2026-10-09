@@ -11,6 +11,7 @@ import { TablesModule } from './modules/tables/tables.module.js';
 import { ProductModule } from './modules/product/product.module.js';
 
 import { LoggerMiddleware } from './common/middleware/logger.middleware.js';
+import { TablesModule } from './tables/tables.module.js';
 
 @Module({
   imports: [
