@@ -5,14 +5,14 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Not, Repository } from 'typeorm';
+import { DataSource, Not, Repository } from 'typeorm';
 import { CreateReservationDto } from './dto/create-reservation.dto.js';
 import { UpdateReservationDto } from './dto/update-reservation.dto.js';
 import {
   Reservation,
   ReservationStatus,
 } from './entities/reservation.entity.js';
-import { Table } from '../tables/entities/table.entity.js';
+import { Table, tableStatus } from '../tables/entities/table.entity.js';
 // Ajusta el nombre de la clase y la ruta si tu entity de clientes es distinta
 import { Customer } from '../customers/entities/customer.entity.js';
 
@@ -25,6 +25,7 @@ export class ReservationsService {
     private readonly tablesRepository: Repository<Table>,
     @InjectRepository(Customer)
     private readonly customersRepository: Repository<Customer>,
+    private readonly dataSource: DataSource,
   ) {}
 
   async create(createReservationDto: CreateReservationDto) {
@@ -108,8 +109,96 @@ export class ReservationsService {
     }
   }
 
+  async confirm(id: string) {
+    const reservation = await this.findOne(id);
+
+    this.assertTransition(
+      reservation,
+      [ReservationStatus.PENDING],
+      'confirmar',
+    );
+
+    reservation.status = ReservationStatus.CONFIRMED;
+    reservation.confirmed_at = new Date();
+    return this.reservationsRepository.save(reservation);
+  }
+
+  async checkIn(id: string) {
+    return this.dataSource.transaction(async (manager) => {
+      const reservation = await manager.findOne(Reservation, {
+        where: { id },
+        relations: { table: true },
+      });
+      if (!reservation) {
+        throw new NotFoundException('Reserva con id ${id} no encontrada');
+      }
+
+      this.assertTransition(
+        reservation,
+        [ReservationStatus.CONFIRMED],
+        'registrar la llegada de',
+      );
+
+      if (!reservation.table) {
+        throw new BadRequestException('La reserva no tiene una mesa asignada ');
+      }
+      if (reservation.table.status === tableStatus.OCCUPIED) {
+        throw new ConflictException(
+          'La mesa ${reservation.table.number} ya esta ocupada',
+        );
+      }
+
+      reservation.table.status = tableStatus.OCCUPIED;
+      await manager.save(reservation.table);
+
+      reservation.status = ReservationStatus.CHECKED_IN;
+      reservation.checked_in_at = new Date();
+      return manager.save(reservation);
+    });
+  }
+
+  async markNoShow(id: string) {
+    return this.dataSource.transaction(async (manager) => {
+      const reservation = await manager.findOne(Reservation, {
+        where: { id },
+        relations: { table: true },
+      });
+      if (!reservation) {
+        throw new NotFoundException(`Reserva con id ${id} no encontrada`);
+      }
+
+      this.assertTransition(
+        reservation,
+        [ReservationStatus.PENDING, ReservationStatus.CONFIRMED],
+        'marcar como no presentada',
+      );
+
+      if (
+        reservation.table &&
+        reservation.table.status !== tableStatus.OCCUPIED
+      ) {
+        reservation.table.status = tableStatus.AVAILABLE;
+        await manager.save(reservation.table);
+      }
+
+      reservation.status = ReservationStatus.NO_SHOW;
+      return manager.save(reservation);
+    });
+  }
   // ---------- Validaciones internas ----------
 
+  private assertTransition(
+    reservation: Reservation,
+    allowed: ReservationStatus[],
+    action: string,
+  ) {
+    if (!allowed.includes(reservation.status)) {
+      throw new ConflictException(
+        `No se puede ${action} una reserva en estado ${reservation.status}. ` +
+          `Estados permitidos: ${allowed.join(', ')}.`,
+      );
+    }
+  }
   private async ensureCustomerExists(customer_id: string) {
     const customer = await this.customersRepository.findOne({
       where: { id: customer_id },

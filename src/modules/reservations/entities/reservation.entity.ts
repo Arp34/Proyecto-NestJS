@@ -83,6 +83,30 @@ export class Reservation {
   })
   notes?: string;
 
+    /**
+   * Fecha y hora en que el personal confirmó la reserva.
+   * Se llena en PATCH /reservations/:id/confirm (PENDING -> CONFIRMED).
+   * Es null mientras la reserva no haya sido confirmada.
+   */
+  @Column({
+    name: 'confirmed_at',
+    type: 'timestamp',
+    nullable: true,
+  })
+  confirmed_at?: Date | null;
+  
+  /**
+   * Fecha y hora en que el cliente llegó al restaurante.
+   * Se llena en PATCH /reservations/:id/check-in (CONFIRMED -> CHECKED_IN).
+   * Es null mientras el cliente no haya llegado.
+   */
+  @Column({
+    name: 'checked_in_at',
+    type: 'timestamp',
+    nullable: true,
+  })
+  checked_in_at?: Date | null;
+
   @CreateDateColumn({
     name: 'created_at',
   })
