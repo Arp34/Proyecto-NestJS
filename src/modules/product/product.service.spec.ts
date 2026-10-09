@@ -59,6 +59,7 @@ describe('ProductService', () => {
 
       const result = await service.create(createDto as any);
 
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(repository.create).toHaveBeenCalledWith({
         name: createDto.name,
         description: undefined,
@@ -68,6 +69,7 @@ describe('ProductService', () => {
         status: undefined,
         imageUrl: undefined,
       });
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(repository.save).toHaveBeenCalledWith(mockProduct);
       expect(result).toEqual(mockProduct);
     });
@@ -80,6 +82,7 @@ describe('ProductService', () => {
 
       const result = await service.findAll();
 
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(repository.find).toHaveBeenCalled();
       expect(result).toEqual(productsArray);
     });
@@ -91,6 +94,7 @@ describe('ProductService', () => {
 
       const result = await service.findOne(mockProduct.id);
 
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(repository.findOneBy).toHaveBeenCalledWith({ id: mockProduct.id });
       expect(result).toEqual(mockProduct);
     });
@@ -107,21 +111,25 @@ describe('ProductService', () => {
   describe('update', () => {
     it('debe actualizar el producto correctamente mapeando categoría y haciendo merge', async () => {
       const updateDto = { price: 150, category_id: 'cat-uuid-456' };
-      const updatedProduct = {
-        ...mockProduct,
+      const updatedProduct = Object.assign({}, mockProduct, {
         price: 150,
-      } as unknown as Product;
+      }) as unknown as Product;
 
-      repository.findOneBy.mockResolvedValue({ ...mockProduct } as Product);
+      repository.findOneBy.mockResolvedValue(
+        Object.assign({}, mockProduct) as Product,
+      );
       repository.save.mockResolvedValue(updatedProduct);
 
       const result = await service.update(mockProduct.id, updateDto as any);
 
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(repository.findOneBy).toHaveBeenCalledWith({ id: mockProduct.id });
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(repository.merge).toHaveBeenCalledWith(
         expect.objectContaining({ category: { id: 'cat-uuid-456' } }),
         { price: 150 },
       );
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(repository.save).toHaveBeenCalled();
       expect(result).toEqual(updatedProduct);
     });
@@ -142,7 +150,9 @@ describe('ProductService', () => {
 
       const result = await service.remove(mockProduct.id);
 
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(repository.findOneBy).toHaveBeenCalledWith({ id: mockProduct.id });
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(repository.remove).toHaveBeenCalledWith(mockProduct);
       expect(result).toEqual(mockProduct);
     });
