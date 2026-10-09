@@ -13,7 +13,6 @@ import {
   ReservationStatus,
 } from './entities/reservation.entity.js';
 import { Table } from '../tables/entities/table.entity.js';
-// Ajusta el nombre de la clase y la ruta si tu entity de clientes es distinta
 import { Customer } from '../customers/entities/customer.entity.js';
 
 @Injectable()
