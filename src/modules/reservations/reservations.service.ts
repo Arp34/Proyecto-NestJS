@@ -4,53 +4,77 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Not, Repository } from 'typeorm';
-import { CreateReservationDto } from './dto/create-reservation.dto.js';
+import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
+import { DataSource, EntityManager, Not, Repository } from 'typeorm';
+import {
+  CreateReservationDto,
+  CustomerDataDto,
+} from './dto/create-reservation.dto.js';
 import { UpdateReservationDto } from './dto/update-reservation.dto.js';
 import {
   Reservation,
   ReservationStatus,
 } from './entities/reservation.entity.js';
 import { Table } from '../tables/entities/table.entity.js';
-// Ajusta el nombre de la clase y la ruta si tu entity de clientes es distinta
 import { Customer } from '../customers/entities/customer.entity.js';
+
+const RESERVATION_DURATION_MINUTES = 120; // confirmar con el equipo
+
+const toMinutes = (time: string) => {
+  const [h, m] = time.slice(0, 5).split(':').map(Number);
+  return h * 60 + m;
+};
 
 @Injectable()
 export class ReservationsService {
   constructor(
     @InjectRepository(Reservation)
     private readonly reservationsRepository: Repository<Reservation>,
-    @InjectRepository(Table)
-    private readonly tablesRepository: Repository<Table>,
-    @InjectRepository(Customer)
-    private readonly customersRepository: Repository<Customer>,
+    @InjectDataSource()
+    private readonly dataSource: DataSource,
   ) {}
 
-  async create(createReservationDto: CreateReservationDto) {
-    const { customer_id, table_id, date, time, guests, notes } =
-      createReservationDto;
-
-    this.ensureNotInPast(date, time);
-    await this.ensureCustomerExists(customer_id);
-
-    // table_id es opcional: solo se valida si viene en la petición
-    if (table_id) {
-      await this.ensureTableFits(table_id, guests);
-      await this.ensureNoConflict(table_id, date, time);
-    }
-
-    const reservation = this.reservationsRepository.create({
+  async create(dto: CreateReservationDto) {
+    const {
       customer_id,
+      customer: customerData,
       table_id,
-      date,
       time,
       guests,
       notes,
-      status: ReservationStatus.PENDING,
-    });
+    } = dto;
+    const date = dto.date.slice(0, 10);
 
-    return this.reservationsRepository.save(reservation);
+    this.ensureNotInPast(date, time); // RN-043
+
+    return this.dataSource.transaction(async (manager) => {
+      // Bloquea la mesa: peticiones simultáneas sobre ella se ejecutan en fila
+      const table = await this.lockTableAndCheckCapacity(
+        manager,
+        table_id,
+        guests,
+      ); // RN-045
+
+      await this.ensureNoConflict(manager, table.id, date, time); // RN-044
+
+      const customer = await this.resolveCustomer(
+        manager,
+        customer_id,
+        customerData,
+      ); // RN-046
+
+      return manager.save(
+        manager.create(Reservation, {
+          customer_id: customer.id,
+          table_id: table.id,
+          date,
+          time,
+          guests,
+          notes,
+          status: ReservationStatus.PENDING, // RN-047
+        }),
+      );
+    });
   }
 
   findAll() {
@@ -69,35 +93,35 @@ export class ReservationsService {
     return reservation;
   }
 
-  async update(id: string, updateReservationDto: UpdateReservationDto) {
-    const reservation = await this.findOne(id);
-
-    // Valores finales = lo que ya tenía + lo que cambia
-    const customer_id =
-      updateReservationDto.customer_id ?? reservation.customer_id;
-    const table_id = updateReservationDto.table_id ?? reservation.table_id;
-    const date = updateReservationDto.date ?? reservation.date;
-    const time = updateReservationDto.time ?? reservation.time;
-    const guests = updateReservationDto.guests ?? reservation.guests;
-
-    if (updateReservationDto.date || updateReservationDto.time) {
-      this.ensureNotInPast(date, time);
-    }
-
-    if (updateReservationDto.customer_id) {
-      await this.ensureCustomerExists(customer_id);
-    }
-
-    if (table_id) {
-      if (updateReservationDto.table_id || updateReservationDto.guests) {
-        await this.ensureTableFits(table_id, guests);
+  async update(id: string, dto: UpdateReservationDto) {
+    return this.dataSource.transaction(async (manager) => {
+      const reservation = await manager.findOne(Reservation, { where: { id } });
+      if (!reservation) {
+        throw new NotFoundException(`Reserva con id ${id} no encontrada`);
       }
-      // Se excluye la propia reserva para que no choque consigo misma
-      await this.ensureNoConflict(table_id, date, time, id);
-    }
 
-    Object.assign(reservation, updateReservationDto);
-    return this.reservationsRepository.save(reservation);
+      const table_id = dto.table_id ?? reservation.table_id;
+      const date = (dto.date ?? reservation.date).slice(0, 10);
+      const time = dto.time ?? reservation.time;
+      const guests = dto.guests ?? reservation.guests;
+
+      if (dto.date || dto.time) {
+        this.ensureNotInPast(date, time);
+      }
+
+      if (dto.customer_id) {
+        await this.resolveCustomer(manager, dto.customer_id);
+      }
+
+      if (table_id) {
+        await this.lockTableAndCheckCapacity(manager, table_id, guests);
+        // Se excluye la propia reserva para que no choque consigo misma
+        await this.ensureNoConflict(manager, table_id, date, time, id);
+      }
+
+      Object.assign(reservation, dto);
+      return manager.save(reservation);
+    });
   }
 
   async remove(id: string): Promise<void> {
@@ -108,23 +132,16 @@ export class ReservationsService {
     }
   }
 
-  // ---------- Validaciones internas ----------
+  //  Validaciones internas 
 
-  private async ensureCustomerExists(customer_id: string) {
-    const customer = await this.customersRepository.findOne({
-      where: { id: customer_id },
-    });
-
-    if (!customer) {
-      throw new NotFoundException(
-        `Cliente con id ${customer_id} no encontrado`,
-      );
-    }
-  }
-
-  private async ensureTableFits(table_id: string, guests: number) {
-    const table = await this.tablesRepository.findOne({
+  private async lockTableAndCheckCapacity(
+    manager: EntityManager,
+    table_id: string,
+    guests: number,
+  ) {
+    const table = await manager.findOne(Table, {
       where: { id: table_id },
+      lock: { mode: 'pessimistic_write' },
     });
 
     if (!table) {
@@ -132,43 +149,79 @@ export class ReservationsService {
     }
 
     if (guests > table.capacity) {
-      throw new ConflictException(
+      throw new BadRequestException(
         `La mesa tiene capacidad para ${table.capacity} personas y la reserva es para ${guests}`,
       );
     }
+
+    return table;
+  }
+
+  private async resolveCustomer(
+    manager: EntityManager,
+    customer_id?: string,
+    data?: CustomerDataDto,
+  ) {
+    if (customer_id) {
+      const customer = await manager.findOne(Customer, {
+        where: { id: customer_id },
+      });
+      if (!customer) {
+        throw new NotFoundException(
+          `Cliente con id ${customer_id} no encontrado`,
+        );
+      }
+      return customer;
+    }
+
+    if (!data) {
+      throw new BadRequestException(
+        'Debes enviar customer_id o los datos del cliente',
+      );
+    }
+
+    const existing = await manager.findOne(Customer, {
+      where: { email: data.email },
+    });
+    return existing ?? manager.save(manager.create(Customer, data));
   }
 
   private async ensureNoConflict(
+    manager: EntityManager,
     table_id: string,
     date: string,
     time: string,
     excludeId?: string,
   ) {
-    const existing = await this.reservationsRepository.findOne({
+    const sameDay = await manager.find(Reservation, {
       where: {
         table_id,
         date,
-        time,
         // Una reserva cancelada libera la mesa
         status: Not(ReservationStatus.CANCELLED),
         ...(excludeId ? { id: Not(excludeId) } : {}),
       },
     });
 
-    if (existing) {
-      throw new ConflictException(
-        'Ya existe una reserva para esa mesa, fecha y hora',
+    const start = toMinutes(time);
+    const overlaps = sameDay.some((r) => {
+      const other = toMinutes(r.time);
+      return (
+        start < other + RESERVATION_DURATION_MINUTES &&
+        other < start + RESERVATION_DURATION_MINUTES
       );
+    });
+
+    if (overlaps) {
+      throw new ConflictException('La mesa ya está reservada en ese horario');
     }
   }
 
   private ensureNotInPast(date: string, time: string) {
-    const when = new Date(`${date.slice(0, 10)}T${time}`);
-
-    // Si el formato no se puede interpretar, se deja pasar
-    if (!Number.isNaN(when.getTime()) && when.getTime() < Date.now()) {
+    const when = new Date(`${date.slice(0, 10)}T${time.slice(0, 5)}:00`);
+    if (Number.isNaN(when.getTime()) || when.getTime() <= Date.now()) {
       throw new BadRequestException(
-        'No se puede reservar en una fecha u hora pasada',
+        'La fecha y hora de la reserva deben ser futuras',
       );
     }
   }
