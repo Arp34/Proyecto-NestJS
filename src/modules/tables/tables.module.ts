@@ -8,5 +8,6 @@ import { Table } from './entities/table.entity.js';
   imports: [TypeOrmModule.forFeature([Table])],
   controllers: [TablesController],
   providers: [TablesService],
+  exports: [TablesService], // NUEVO: para reservas y pedidos
 })
 export class TablesModule {}
