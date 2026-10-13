@@ -24,7 +24,8 @@ export class AuthService {
     const { email, password } = loginDto;
     const customer = await this.customersService.findByEmailForAuth(email);
 
-    if (!customer) {
+    // Evita pasar undefined a bcrypt y previene enumeración de usuarios
+    if (!customer || !customer.password) {
       throw new UnauthorizedException('Credenciales incorrectas');
     }
 

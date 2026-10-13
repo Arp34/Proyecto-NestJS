@@ -126,17 +126,12 @@ export class CustomersService {
 
   // --- Métodos auxiliares para Auth y Profile ---
 
-  async findByEmailForAuth(email: string) {
-    return this.customerRepository.findOne({
-      where: { email },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        password: true,
-        status: true,
-      },
-    });
+  async findByEmailForAuth(email: string): Promise<Customer | null> {
+    return this.customerRepository
+      .createQueryBuilder('customer')
+      .addSelect('customer.password')
+      .where('customer.email = :email', { email })
+      .getOne();
   }
 
   async setResetPasswordToken(id: string, token: string, expires: Date) {
