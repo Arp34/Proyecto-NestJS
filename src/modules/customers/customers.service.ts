@@ -35,14 +35,18 @@ export class CustomersService {
       saltRounds,
     );
 
+    // Mapeo explícito para evitar warning de no-misused-spread
     const customer = this.customerRepository.create({
-      ...createCustomerDto,
+      name: createCustomerDto.name,
+      phone: createCustomerDto.phone,
+      email: createCustomerDto.email,
       password: hashedPassword,
     });
 
     const savedCustomer = await this.customerRepository.save(customer);
 
-    const { password, ...result } = savedCustomer;
+    // Desestructuración con _password para silenciar warning de no-unused-vars
+    const { password: _password, ...result } = savedCustomer;
     return result;
   }
 
