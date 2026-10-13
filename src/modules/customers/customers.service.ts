@@ -42,8 +42,8 @@ export class CustomersService {
 
     const savedCustomer = await this.customerRepository.save(customer);
 
-    delete savedCustomer.password;
-    return savedCustomer;
+    const { password, ...result } = savedCustomer;
+    return result;
   }
 
   findAll() {
@@ -56,6 +56,18 @@ export class CustomersService {
       throw new NotFoundException(`Cliente con ID ${id} no encontrado`);
     }
     return customer;
+  }
+
+  async findByEmailWithPassword(email: string) {
+    return this.customerRepository.findOne({
+      where: { email },
+      select: {
+        id: true,
+        email: true,
+        password: true,
+        name: true,
+      },
+    });
   }
 
   async update(id: string, updateCustomerDto: UpdateCustomerDto) {
@@ -78,7 +90,10 @@ export class CustomersService {
 
     const customer = await this.customerRepository.findOne({
       where: { id },
-      select: ['id', 'password'],
+      select: {
+        id: true,
+        password: true,
+      },
     });
 
     if (!customer) {
@@ -107,5 +122,51 @@ export class CustomersService {
     return {
       message: 'Cliente eliminado correctamente',
     };
+  }
+
+  // --- Métodos auxiliares para Auth y Profile ---
+
+  async findByEmailForAuth(email: string) {
+    return this.customerRepository.findOne({
+      where: { email },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        password: true,
+        status: true,
+      },
+    });
+  }
+
+  async setResetPasswordToken(id: string, token: string, expires: Date) {
+    await this.customerRepository.update(id, {
+      resetPasswordToken: token,
+      resetPasswordExpires: expires,
+    });
+  }
+
+  async findByResetToken(token: string) {
+    return this.customerRepository.findOne({
+      where: { resetPasswordToken: token },
+      select: {
+        id: true,
+        resetPasswordToken: true,
+        resetPasswordExpires: true,
+      },
+    });
+  }
+
+  async resetPasswordWithToken(id: string, hashedPassword: string) {
+    await this.customerRepository.update(id, {
+      password: hashedPassword,
+      resetPasswordToken: null,
+      resetPasswordExpires: null,
+    });
+  }
+
+  async updateProfile(id: string, updateData: Partial<Customer>) {
+    await this.customerRepository.update(id, updateData);
+    return this.findOne(id);
   }
 }

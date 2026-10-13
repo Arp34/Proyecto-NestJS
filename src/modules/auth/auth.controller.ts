@@ -1,34 +1,38 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { LoginDto } from '../customers/dto/login.dto.js';
+
+import { Public } from '../../common/decorators/public.decorator.js';
+import { AuthService } from './auth.service.js';
 import { ForgotPasswordDto } from '../customers/dto/forgot-password.dto.js';
+import { LoginDto } from '../customers/dto/login.dto.js';
 import { ResetPasswordDto } from '../customers/dto/reset-password.dto.js';
 
-// Hice un controlador de autenticación con tres rutas: login, forgot-password y reset-password. Cada ruta tiene un método POST y utiliza DTOs para validar los datos de entrada. Además, he agregado documentación de Swagger para cada operación.
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
-  // Aquí está el código completo del controlador de autenticación con las rutas y la documentación de Swagger:
+  constructor(private readonly authService: AuthService) {}
+
+  @Public()
+  @HttpCode(HttpStatus.OK)
   @Post('login')
-  @ApiOperation({
-    summary: 'Iniciar sesión de usuario',
-  })
+  @ApiOperation({ summary: 'Iniciar sesión de usuario' })
   login(@Body() loginDto: LoginDto) {
-    return { msg: 'Sesión inciada', data: loginDto };
+    return this.authService.login(loginDto);
   }
 
-  // Rutas para la recuperación y restablecimiento de contraseña
+  @Public()
+  @HttpCode(HttpStatus.OK)
   @Post('forgot-password')
   @ApiOperation({ summary: 'Solicitar recuperación de contraseña' })
   forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
-    return { msg: 'Correo de recuperación enviado', data: forgotPasswordDto };
+    return this.authService.forgotPassword(forgotPasswordDto);
   }
 
+  @Public()
+  @HttpCode(HttpStatus.OK)
   @Post('reset-password')
-  @ApiOperation({
-    summary: 'Por favor, reestablece tu contraseña',
-  })
+  @ApiOperation({ summary: 'Restablecer contraseña utilizando token' })
   resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
-    return { msg: 'Contraseña restablecida con éxito', data: resetPasswordDto };
+    return this.authService.resetPassword(resetPasswordDto);
   }
 }

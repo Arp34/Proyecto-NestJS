@@ -54,7 +54,7 @@ export class CustomersController {
     return this.customersService.update(id, updateCustomerDto);
   }
 
-  @Patch(':id/change-password')
+  @Patch(':id/reset-password')
   @ApiOperation({ summary: 'Cambiar contraseña de cliente' })
   changePassword(
     @Param('id') id: string,
