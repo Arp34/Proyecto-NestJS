@@ -59,6 +59,7 @@ category: Category;
 | `update`  | Reutiliza `findOne` para traer el producto, copia los campos nuevos con `repository.merge()`, y guarda con `repository.save()`.             |
 | `remove`  | Reutiliza `findOne` (que ya valida existencia) y elimina con `repository.remove()`.                                                         |
 
+
 # Estado y Disponibilidad del Producto
 
 Este módulo gestiona de forma independiente el ciclo de vida operativo (**status**) y la existencia comercial (**availability**) de los productos dentro de la entidad `Product`.
@@ -137,3 +138,17 @@ El sistema utiliza **NestJS** junto con `class-validator` para asegurar la integ
 - **`UpdateProductAvailabilityDto`**: Valida que la disponibilidad recibida pertenezca estrictamente al enum `productAvailability` mediante el decorador `@IsEnum(productAvailability)`.
 
 > ⚠️ **Manejo de Errores:** Si se envía un valor que no pertenece al enum correspondiente, NestJS interceptará la petición y devolverá automáticamente un error **`400 Bad Request`**.
+
+## 🧪 Pruebas Unitarias
+
+Se implementaron las pruebas unitarias para verificar la lógica de negocio y los endpoints HTTP del módulo de productos:
+
+- **ProductService:** Cobertura total de los métodos `create`, `findAll`, `findOne`, `update` y `remove`.
+- **ProductController:** Validación del ruteo y respuestas asociadas a cada operación.
+
+### Comando para ejecutar las pruebas
+
+```bash
+npm run test -- product
+```
+
