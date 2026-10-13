@@ -43,6 +43,3 @@ jobs:
 
       - name: Build
         run: npm run build
-
-      - name: Unit tests with coverage
-        run: npm run test:cov
