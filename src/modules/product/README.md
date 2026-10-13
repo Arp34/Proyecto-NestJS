@@ -59,6 +59,86 @@ category: Category;
 | `update`  | Reutiliza `findOne` para traer el producto, copia los campos nuevos con `repository.merge()`, y guarda con `repository.save()`.             |
 | `remove`  | Reutiliza `findOne` (que ya valida existencia) y elimina con `repository.remove()`.                                                         |
 
+
+# Estado y Disponibilidad del Producto
+
+Este módulo gestiona de forma independiente el ciclo de vida operativo (**status**) y la existencia comercial (**availability**) de los productos dentro de la entidad `Product`.
+
+## 📌 Conceptos Generales
+
+El producto cuenta con dos valores independientes para controlar su comportamiento en la plataforma:
+
+- **`status`**: Indica si el producto está activo o inactivo en el sistema.
+- **`availability`**: Indica si el producto cuenta con stock o disponibilidad para la venta.
+
+### Valores por Defecto (Nuevos Productos)
+
+Al crear un nuevo registro en la entidad `Product`, se asignan automáticamente los siguientes estados:
+
+- `status`: `ACTIVE`
+- `availability`: `AVAILABLE`
+
+---
+
+## 🛠️ Enums y Tipos de Datos
+
+Ambas propiedades se definen mediante enumeraciones de TypeScript directamente en la entidad:
+
+```typescript
+export enum productStatus {
+  ACTIVE = 'ACTIVE',
+  INACTIVE = 'INACTIVE',
+}
+
+export enum productAvailability {
+  AVAILABLE = 'AVAILABLE',
+  UNAVAILABLE = 'UNAVAILABLE',
+}
+```
+
+---
+
+## 🛣️ Nuevos Endpoints
+
+Se han habilitado endpoints específicos de tipo `PATCH` para modificar cada propiedad de manera aislada. **Cambiar el `status` no modifica la `availability`, y viceversa.**
+
+### 1. Actualizar Estado
+
+Modifica únicamente el estado general del producto.
+
+- **Ruta:** `PATCH /product/{id}/status`
+- **DTO utilizado:** `UpdateProductStatusDto`
+- **Ejemplo de Body:**
+  ```json
+  {
+    "status": "INACTIVE"
+  }
+  ```
+
+### 2. Actualizar Disponibilidad
+
+Modifica únicamente la disponibilidad comercial del producto.
+
+- **Ruta:** `PATCH /product/{id}/availability`
+- **DTO utilizado:** `UpdateProductAvailabilityDto`
+- **Ejemplo de Body:**
+  ```json
+  {
+    "availability": "UNAVAILABLE"
+  }
+  ```
+
+---
+
+## 🔒 Validaciones y DTOs
+
+El sistema utiliza **NestJS** junto con `class-validator` para asegurar la integridad de los datos entrantes:
+
+- **`UpdateProductStatusDto`**: Valida que el estado recibido pertenezca estrictamente al enum `productStatus` mediante el decorador `@IsEnum(productStatus)`.
+- **`UpdateProductAvailabilityDto`**: Valida que la disponibilidad recibida pertenezca estrictamente al enum `productAvailability` mediante el decorador `@IsEnum(productAvailability)`.
+
+> ⚠️ **Manejo de Errores:** Si se envía un valor que no pertenece al enum correspondiente, NestJS interceptará la petición y devolverá automáticamente un error **`400 Bad Request`**.
+
 ## 🧪 Pruebas Unitarias
 
 Se implementaron las pruebas unitarias para verificar la lógica de negocio y los endpoints HTTP del módulo de productos:
@@ -71,3 +151,4 @@ Se implementaron las pruebas unitarias para verificar la lógica de negocio y lo
 ```bash
 npm run test -- product
 ```
+

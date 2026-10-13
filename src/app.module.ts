@@ -10,7 +10,6 @@ import { CustomersModule } from './modules/customers/customers.module.js';
 import { TablesModule } from './modules/tables/tables.module.js';
 import { ProductModule } from './modules/product/product.module.js';
 
-
 function validateEnv(config: Record<string, unknown>) {
   const required = [
     'DB_HOST',
