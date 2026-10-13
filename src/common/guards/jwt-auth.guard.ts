@@ -10,7 +10,6 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
   }
 
   canActivate(context: ExecutionContext) {
-    // Verificamos si la ruta tiene el decorador @Public()
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
       context.getHandler(),
       context.getClass(),
@@ -20,7 +19,6 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
       return true;
     }
 
-    // Si no es pública, ejecutamos la validación del token de Passport
     return super.canActivate(context);
   }
 }
