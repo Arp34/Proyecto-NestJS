@@ -51,10 +51,23 @@ category: Category;
 
 ## Lógica del service (resumen)
 
-| Método | Qué hace |
-|---|---|
-| `create` | Construye la entidad con `repository.create()` (incluyendo la categoría vía `category: { id: ... }`) y la persiste con `repository.save()`. |
-| `findAll` | Devuelve todos los productos con `repository.find()`. |
-| `findOne` | Busca por `id` con `findOneBy()`; lanza `NotFoundException` (404) si no existe. |
-| `update` | Reutiliza `findOne` para traer el producto, copia los campos nuevos con `repository.merge()`, y guarda con `repository.save()`. |
-| `remove` | Reutiliza `findOne` (que ya valida existencia) y elimina con `repository.remove()`. |
+| Método    | Qué hace                                                                                                                                    |
+| --------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `create`  | Construye la entidad con `repository.create()` (incluyendo la categoría vía `category: { id: ... }`) y la persiste con `repository.save()`. |
+| `findAll` | Devuelve todos los productos con `repository.find()`.                                                                                       |
+| `findOne` | Busca por `id` con `findOneBy()`; lanza `NotFoundException` (404) si no existe.                                                             |
+| `update`  | Reutiliza `findOne` para traer el producto, copia los campos nuevos con `repository.merge()`, y guarda con `repository.save()`.             |
+| `remove`  | Reutiliza `findOne` (que ya valida existencia) y elimina con `repository.remove()`.                                                         |
+
+## 🧪 Pruebas Unitarias
+
+Se implementaron las pruebas unitarias para verificar la lógica de negocio y los endpoints HTTP del módulo de productos:
+
+- **ProductService:** Cobertura total de los métodos `create`, `findAll`, `findOne`, `update` y `remove`.
+- **ProductController:** Validación del ruteo y respuestas asociadas a cada operación.
+
+### Comando para ejecutar las pruebas
+
+```bash
+npm run test -- product
+```
