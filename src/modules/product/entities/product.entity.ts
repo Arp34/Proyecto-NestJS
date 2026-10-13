@@ -11,7 +11,7 @@ import {
 import { productAvailability, productStatus } from '../enum/interface.js';
 import { Category } from '../../categories/entities/category.entity.js';
 
-// Product entity definition with TypeORM decorator
+// Product entity definition with TypeORM decorators
 @Entity('product')
 export class Product {
   @PrimaryGeneratedColumn('uuid')
