@@ -6,11 +6,13 @@ import {
   Patch,
   Param,
   Delete,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { CategoriesService } from './categories.service.js';
 import { CreateCategoryDto } from './dto/create-category.dto.js';
 import { UpdateCategoryDto } from './dto/update-category.dto.js';
+import { UpdateCategoryStatusDto } from './dto/update-category-status.dto.js';
 
 @ApiTags('Categories')
 @Controller('categories')
@@ -42,6 +44,20 @@ export class CategoriesController {
     @Body() updateCategoryDto: UpdateCategoryDto,
   ) {
     return await this.categoriesService.update(id, updateCategoryDto);
+  }
+
+  @Patch(':id/status')
+  @ApiOperation({
+    summary: 'Actualizar el estado (Activo/Inactivo) de una categoría',
+  })
+  async updateStatus(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() updateCategoryStatusDto: UpdateCategoryStatusDto,
+  ) {
+    return await this.categoriesService.updateStatus(
+      id,
+      updateCategoryStatusDto,
+    );
   }
 
   @Delete(':id')
