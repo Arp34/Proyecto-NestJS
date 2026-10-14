@@ -157,9 +157,42 @@ app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
 - **Endpoints adicionales:** cancelar una reserva (`PATCH /reservations/:id/cancel`), cambiar estado, consultar disponibilidad, y filtros con paginación en `GET /reservations`.
 - **Actualizar el estado de la mesa** (`RESERVED` / `AVAILABLE`) al crear o cancelar una reserva.
 
+
+
+## Tests
+
+El módulo incluye pruebas unitarias para el service y el controller. El repositorio de TypeORM está completamente mockeado, por lo que no se conecta a ninguna base de datos real:
+
+```bash
+npm run test -- reservations
+```
+
+Cobertura de casos:
+
+- **Service:** creación con y sin mesa, listado, búsqueda por UUID, actualización y eliminación, incluyendo los errores `400` (fecha u hora pasada), `404` (reserva, cliente o mesa inexistente) y `409` (capacidad excedida o mesa ya reservada en esa fecha y hora).
+- **Controller:** verifica que cada endpoint (`POST`, `GET`, `PATCH`, `DELETE`) llame al método correspondiente del service.
+
+## Pendientes / posibles mejoras
+
+- Agregar paginación y filtros (por fecha, estado o cliente) en `GET /reservations`.
+- Detectar solapamientos por rango de tiempo; actualmente el conflicto solo se detecta cuando la fecha y hora coinciden exactamente en la misma mesa.
+- Reemplazar la eliminación física por una cancelación (`status = cancelled`), para conservar el historial.
+- Ampliar las pruebas con tests de integración (e2e) sobre los endpoints.
+
+## Evidencia de Pruebas Unitarias
+
+Comando ejecutado:
+
+```bash
+npm run test -- reservations
+```
+
+![Evidencia de pruebas unitarias del módulo reservations](./docs/evidencia-pruebas-unitarias.png)
+
 ### Cancelación de Reservas (`PATCH /reservations/:id/cancel`)
 
 - **RN-055:** Una reserva solo se puede cancelar si su estado actual es `PENDING` o `CONFIRMED`.
 - **RN-056:** Una reserva en estado `COMPLETED` o ya `CANCELLED` no puede volver a cancelarse (devuelve un error `400 Bad Request`).
 - **RN-057:** Tras la cancelación, el estado de la reserva cambia a `CANCELLED`, lo que libera automáticamente la franja horaria de la mesa en el motor de disponibilidad.
 - **RN-058:** El registro permanece en PostgreSQL con estado `CANCELLED` para auditoría e historial (se aplica un _soft change_, no un borrado físico). Si el ID no existe, devuelve `404 Not Found`.
+
