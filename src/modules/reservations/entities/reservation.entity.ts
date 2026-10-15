@@ -83,7 +83,7 @@ export class Reservation {
   })
   notes?: string;
 
-    /**
+  /**
    * Fecha y hora en que el personal confirmó la reserva.
    * Se llena en PATCH /reservations/:id/confirm (PENDING -> CONFIRMED).
    * Es null mientras la reserva no haya sido confirmada.
@@ -94,7 +94,7 @@ export class Reservation {
     nullable: true,
   })
   confirmed_at?: Date | null;
-  
+
   /**
    * Fecha y hora en que el cliente llegó al restaurante.
    * Se llena en PATCH /reservations/:id/check-in (CONFIRMED -> CHECKED_IN).

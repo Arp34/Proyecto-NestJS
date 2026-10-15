@@ -147,7 +147,7 @@ export class ReservationsService {
         relations: { table: true },
       });
       if (!reservation) {
-        throw new NotFoundException('Reserva con id ${id} no encontrada');
+        throw new NotFoundException(`Reserva con id ${id} no encontrada`);
       }
 
       this.assertTransition(
@@ -161,7 +161,7 @@ export class ReservationsService {
       }
       if (reservation.table.status === tableStatus.OCCUPIED) {
         throw new ConflictException(
-          'La mesa ${reservation.table.number} ya esta ocupada',
+          `La mesa ${reservation.table.number} ya esta ocupada`,
         );
       }
 
