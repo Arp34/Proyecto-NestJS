@@ -11,10 +11,12 @@ import {
 import { ProductService } from './product.service.js';
 import { CreateProductDto } from './dto/create-product.dto.js';
 import { UpdateProductDto } from './dto/update-product.dto.js';
+import { UpdateProductStatusDto } from './dto/update-product-status.dto.js';
+import { UpdateProductAvailabilityDto } from './dto/update-product-availability.dto.js';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 
 @ApiTags('Product')
-@Controller('product')
+@Controller('Product')
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
@@ -43,6 +45,24 @@ export class ProductController {
     @Body() updateProductDto: UpdateProductDto,
   ) {
     return this.productService.update(id, updateProductDto);
+  }
+
+  @Patch(':id/status')
+  @ApiOperation({ summary: 'Actualizar el estado de un producto' })
+  updateStatus(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() updateStatusDto: UpdateProductStatusDto,
+  ) {
+    return this.productService.updateStatus(id, updateStatusDto);
+  }
+
+  @Patch(':id/availability')
+  @ApiOperation({ summary: 'Actualizar la disponibilidad de un producto' })
+  updateAvailability(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() updateAvailabilityDto: UpdateProductAvailabilityDto,
+  ) {
+    return this.productService.updateAvailability(id, updateAvailabilityDto);
   }
 
   @Delete(':id')
