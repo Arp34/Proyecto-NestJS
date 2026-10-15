@@ -9,7 +9,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { Repository } from 'typeorm';
 
-import { ChangePasswordDto } from './dto/change-password.dto.js';
+import { ChangePasswordDto } from '../auth/dto/change-password.dto.js';
 import { CreateCustomerDto } from './dto/create-customer.dto.js';
 import { UpdateCustomerDto } from './dto/update-customer.dto.js';
 import { Customer } from './entities/customer.entity.js';

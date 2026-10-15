@@ -3,9 +3,9 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { Public } from '../../common/decorators/public.decorator.js';
 import { AuthService } from './auth.service.js';
-import { ForgotPasswordDto } from '../customers/dto/forgot-password.dto.js';
-import { LoginDto } from '../customers/dto/login.dto.js';
-import { ResetPasswordDto } from '../customers/dto/reset-password.dto.js';
+import { ForgotPasswordDto } from './dto/forgot-password.dto.js';
+import { LoginDto } from './dto/login.dto.js';
+import { ResetPasswordDto } from './dto/reset-password.dto.js';
 
 @ApiTags('Auth')
 @Controller('auth')

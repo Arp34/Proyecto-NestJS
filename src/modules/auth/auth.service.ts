@@ -9,9 +9,9 @@ import { randomUUID } from 'crypto';
 
 import { CustomersService } from '../customers/customers.service.js';
 import { CustomerStatus } from '../customers/entities/customer.entity.js';
-import { ForgotPasswordDto } from '../customers/dto/forgot-password.dto.js';
-import { LoginDto } from '../customers/dto/login.dto.js';
-import { ResetPasswordDto } from '../customers/dto/reset-password.dto.js';
+import { ForgotPasswordDto } from './dto/forgot-password.dto.js';
+import { LoginDto } from './dto/login.dto.js';
+import { ResetPasswordDto } from './dto/reset-password.dto.js';
 
 @Injectable()
 export class AuthService {
