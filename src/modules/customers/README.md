@@ -1,5 +1,9 @@
+---
+title: Customers Module
+description: Módulo para administrar clientes del restaurante con NestJS, TypeORM y PostgreSQL.
+---
 
-# Customers Module
+#### Customers Module
 
 ## Descripción
 
@@ -407,4 +411,110 @@ DELETE /customers/:id
 * Control de correos electrónicos duplicados.
 * Uso de variables de entorno para la configuración de la base de datos.
 * Documentación de la API mediante Swagger.
+
+---
+
+## Evidencia de Pruebas Unitarias
+
+Se implementó una suite de pruebas unitarias para el módulo `Customers` utilizando **Jest**.
+
+Las pruebas fueron realizadas de forma aislada mediante mocks, evitando conexiones a una base de datos PostgreSQL real durante la ejecución de los tests.
+
+### Pruebas del CustomersService
+
+Se validaron los siguientes escenarios:
+
+- Creación exitosa de un cliente.
+- Validación de correo electrónico duplicado mediante `ConflictException`.
+- Consulta de todos los clientes.
+- Consulta de un cliente por UUID.
+- Manejo de cliente inexistente mediante `NotFoundException`.
+- Actualización de un cliente utilizando `preload`.
+- Validación de correo electrónico duplicado durante la actualización.
+- Manejo de ID inexistente durante la actualización.
+- Eliminación de un cliente utilizando `remove`.
+- Manejo de ID inexistente durante la eliminación.
+
+### Pruebas del CustomersController
+
+Se validó que cada método del controlador invoque correctamente el método correspondiente del `CustomersService`:
+
+- `POST /customers` → `create()`
+- `GET /customers` → `findAll()`
+- `GET /customers/:id` → `findOne()`
+- `PATCH /customers/:id` → `update()`
+- `DELETE /customers/:id` → `remove()`
+
+### Ejecución de las pruebas
+
+Las pruebas del módulo se ejecutan mediante:
+
+```bash
+
+npm run test -- customers
+```
+
+``` text
+
+src/customers/evidence-test-service.png
+
+```
+### Evidencia de Pruebas Unitarias
+
+Se implementó una suite de pruebas unitarias para el módulo Customers utilizando Jest y mocks de TypeORM, evitando conexiones reales a PostgreSQL.
+
+Pruebas del CustomersService
+- Creación exitosa de un cliente.
+- Email duplicado → ConflictException (409).
+- Consulta de todos los clientes.
+- Consulta por UUID.
+- Cliente inexistente → NotFoundException (404).
+- Actualización mediante preload().
+- Email duplicado durante actualización → ConflictException (409).
+- ID inexistente durante actualización → NotFoundException (404).
+- Eliminación mediante remove().
+- ID inexistente durante eliminación → NotFoundException (404).
+
+
+### Pruebas del CustomersController
+
+Se validó que cada método del controlador delegue correctamente en CustomersService:
+
+- POST /customers → create()
+- GET /customers → findAll()
+- GET /customers/:id → findOne()
+- PATCH /customers/:id → update()
+- DELETE /customers/:id → remove()
+
+
+### Mock del repositorio
+
+El repositorio de Customer se reemplaza mediante getRepositoryToken(Customer). Los métodos simulados son:
+
+find()
+findOne()
+findOneBy()
+create()
+save()
+preload()
+remove()
+
+### Ejecucion
+
+npm run test -- customers
+
+resultado esperado
+
+Test Suites: 2 passed, 2 total
+Tests:       17 passed, 17 total
+
+
+### Verificaciones finales
+
+npm run test -- customers
+npm run build
+npm run lint
+
+
+
 

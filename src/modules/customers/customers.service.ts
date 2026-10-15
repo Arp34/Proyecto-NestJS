@@ -4,6 +4,7 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
+
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { Repository } from 'typeorm';
@@ -12,6 +13,7 @@ import { ChangePasswordDto } from './dto/change-password.dto.js';
 import { CreateCustomerDto } from './dto/create-customer.dto.js';
 import { UpdateCustomerDto } from './dto/update-customer.dto.js';
 import { Customer } from './entities/customer.entity.js';
+import { instanceToPlain } from 'class-transformer';
 
 @Injectable()
 export class CustomersService {
@@ -28,50 +30,17 @@ export class CustomersService {
     if (existingCustomer) {
       throw new ConflictException('El email ya está registrado');
     }
+    const customer = this.customerRepository.create(createCustomerDto);
 
-    const saltRounds = 10;
-    const hashedPassword = await bcrypt.hash(
-      createCustomerDto.password,
-      saltRounds,
-    );
-
-    // Mapeo explícito para evitar warning de no-misused-spread
-    const customer = this.customerRepository.create({
-      name: createCustomerDto.name,
-      phone: createCustomerDto.phone,
-      email: createCustomerDto.email,
-      password: hashedPassword,
-    });
-
-    const savedCustomer = await this.customerRepository.save(customer);
-
-    // Desestructuración con _password para silenciar warning de no-unused-vars
-    const { password: _password, ...result } = savedCustomer;
-    return result;
+    return this.customerRepository.save(customer);
   }
 
   findAll() {
     return this.customerRepository.find();
   }
 
-  async findOne(id: string) {
-    const customer = await this.customerRepository.findOneBy({ id });
-    if (!customer) {
-      throw new NotFoundException(`Cliente con ID ${id} no encontrado`);
-    }
-    return customer;
-  }
-
-  async findByEmailWithPassword(email: string) {
-    return this.customerRepository.findOne({
-      where: { email },
-      select: {
-        id: true,
-        email: true,
-        password: true,
-        name: true,
-      },
-    });
+  findOne(id: string) {
+    return this.customerRepository.findOneBy({ id });
   }
 
   async update(id: string, updateCustomerDto: UpdateCustomerDto) {
@@ -81,12 +50,13 @@ export class CustomersService {
       });
 
       if (existingCustomer && existingCustomer.id !== id) {
-        throw new ConflictException('El email ya está registrado');
+        throw new ConflictException('El email ya esta registrado');
       }
     }
 
     await this.customerRepository.update(id, updateCustomerDto);
-    return this.findOne(id);
+
+    return this.customerRepository.findOneBy({ id });
   }
 
   async changePassword(id: string, changePasswordDto: ChangePasswordDto) {
@@ -109,19 +79,7 @@ export class CustomersService {
       throw new UnauthorizedException('La contraseña actual es incorrecta');
     }
 
-    const saltRounds = 10;
-    const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
-
-    await this.customerRepository.update(id, { password: hashedPassword });
-
-    return {
-      message: 'Contraseña actualizada con éxito',
-    };
-  }
-
-  async remove(id: string) {
-    const customer = await this.findOne(id);
-    await this.customerRepository.delete(customer.id);
+    await this.customerRepository.delete(id);
 
     return {
       message: 'Cliente eliminado correctamente',

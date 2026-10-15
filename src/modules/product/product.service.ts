@@ -3,7 +3,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateProductDto } from './dto/create-product.dto.js';
 import { UpdateProductDto } from './dto/update-product.dto.js';
+import { UpdateProductStatusDto } from './dto/update-product-status.dto.js';
+import { UpdateProductAvailabilityDto } from './dto/update-product-availability.dto.js';
 import { Product } from './entities/product.entity.js';
+import { productStatus } from './enum/interface.js';
 
 @Injectable()
 export class ProductService {
@@ -19,8 +22,6 @@ export class ProductService {
       description: createProductDto.description,
       price: createProductDto.price,
       category: { id: createProductDto.category_id },
-      availability: createProductDto.availability,
-      status: createProductDto.status,
       imageUrl: createProductDto.imageUrl,
     });
 
@@ -28,7 +29,11 @@ export class ProductService {
   }
 
   async findAll() {
-    return await this.productRepository.find();
+    return await this.productRepository.find({
+      where: {
+        status: productStatus.ACTIVE,
+      },
+    });
   }
 
   async findOne(id: string) {
@@ -40,6 +45,7 @@ export class ProductService {
         errorCode: 'PRODUCT_NOT_FOUND',
       });
     }
+
     return product;
   }
 
@@ -60,8 +66,28 @@ export class ProductService {
     return await this.productRepository.save(productUpdate);
   }
 
+  async updateStatus(id: string, updateStatusDto: UpdateProductStatusDto) {
+    const product = await this.findOne(id);
+
+    product.status = updateStatusDto.status;
+
+    return await this.productRepository.save(product);
+  }
+
+  async updateAvailability(
+    id: string,
+    updateAvailabilityDto: UpdateProductAvailabilityDto,
+  ) {
+    const product = await this.findOne(id);
+
+    product.availability = updateAvailabilityDto.availability;
+
+    return await this.productRepository.save(product);
+  }
+
   async remove(id: string) {
     const productRemove = await this.findOne(id);
+
     return await this.productRepository.remove(productRemove);
   }
 }
