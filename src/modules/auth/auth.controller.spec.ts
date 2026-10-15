@@ -36,6 +36,7 @@ describe('AuthController', () => {
       const result = await controller.login(dto as any);
 
       expect(result).toEqual({ access_token: 'mock_token' });
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(authService.login).toHaveBeenCalledWith(dto);
     });
   });
@@ -46,6 +47,7 @@ describe('AuthController', () => {
       const result = await controller.forgotPassword(dto as any);
 
       expect(result).toEqual({ message: 'Instrucciones enviadas' });
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(authService.forgotPassword).toHaveBeenCalledWith(dto);
     });
   });
@@ -56,6 +58,7 @@ describe('AuthController', () => {
       const result = await controller.resetPassword(dto as any);
 
       expect(result).toEqual({ message: 'Contraseña restablecida' });
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(authService.resetPassword).toHaveBeenCalledWith(dto);
     });
   });

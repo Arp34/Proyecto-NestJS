@@ -1,10 +1,8 @@
-import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
-
-import { Public } from '../../common/decorators/public.decorator.js';
+import { Controller, Post, Body, HttpCode, HttpStatus } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { AuthService } from './auth.service.js';
-import { ForgotPasswordDto } from './dto/forgot-password.dto.js';
 import { LoginDto } from './dto/login.dto.js';
+import { ForgotPasswordDto } from './dto/forgot-password.dto.js';
 import { ResetPasswordDto } from './dto/reset-password.dto.js';
 
 @ApiTags('Auth')
@@ -12,26 +10,27 @@ import { ResetPasswordDto } from './dto/reset-password.dto.js';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Public()
-  @HttpCode(HttpStatus.OK)
   @Post('login')
-  @ApiOperation({ summary: 'Iniciar sesión de usuario' })
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Iniciar sesión' })
+  @ApiResponse({
+    status: 200,
+    description: 'Login exitoso, retorna el token JWT.',
+  })
   login(@Body() loginDto: LoginDto) {
     return this.authService.login(loginDto);
   }
 
-  @Public()
-  @HttpCode(HttpStatus.OK)
   @Post('forgot-password')
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Solicitar recuperación de contraseña' })
   forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
     return this.authService.forgotPassword(forgotPasswordDto);
   }
 
-  @Public()
-  @HttpCode(HttpStatus.OK)
   @Post('reset-password')
-  @ApiOperation({ summary: 'Restablecer contraseña utilizando token' })
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Restablecer contraseña con token' })
   resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
     return this.authService.resetPassword(resetPasswordDto);
   }

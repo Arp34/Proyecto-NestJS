@@ -134,7 +134,9 @@ describe('AuthService', () => {
 
       const result = await service.forgotPassword({ email: 'test@test.com' });
 
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(customersService.setResetPasswordToken).toHaveBeenCalled();
+
       expect(result).toEqual({
         message: 'Si el correo está registrado, recibirás las instrucciones',
       });
@@ -151,7 +153,7 @@ describe('AuthService', () => {
     });
 
     it('should throw BadRequestException if token has expired', async () => {
-      const expiredDate = new Date(Date.now() - 1000); // Expirado hace un segundo
+      const expiredDate = new Date(Date.now() - 1000);
       const mockCustomer = {
         id: '1',
         resetPasswordToken: 'valid_token',
