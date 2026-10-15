@@ -1,11 +1,16 @@
 import { Module } from '@nestjs/common';
-import { JwtModule, JwtSignOptions } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { JwtStrategy } from './jwt.strategy.js';
+import { JwtModule, JwtSignOptions } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
+
+import { CustomersModule } from '../customers/customers.module.js';
+import { AuthController } from './auth.controller.js';
+import { AuthService } from './auth.service.js';
+import { JwtStrategy } from './jwt.strategy.js';
 
 @Module({
   imports: [
+    CustomersModule,
     PassportModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
@@ -29,7 +34,8 @@ import { PassportModule } from '@nestjs/passport';
       },
     }),
   ],
-  providers: [JwtStrategy],
-  exports: [JwtModule], // Exportado para que el UsersModule pueda firmar tokens
+  controllers: [AuthController],
+  providers: [AuthService, JwtStrategy],
+  exports: [AuthService, JwtModule],
 })
 export class AuthModule {}

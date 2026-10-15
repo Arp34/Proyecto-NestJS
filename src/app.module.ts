@@ -34,6 +34,7 @@ function validateEnv(config: Record<string, unknown>) {
 }
 import { LoggerMiddleware } from './common/middleware/logger.middleware.js';
 import { AuthModule } from './modules/auth/auth.module.js';
+import { ProfileModule } from './modules/profile/profile.module.js';
 
 @Module({
   imports: [
@@ -60,6 +61,7 @@ import { AuthModule } from './modules/auth/auth.module.js';
     ProductModule,
     CustomersModule,
     AuthModule,
+    ProfileModule,
   ],
 })
 export class AppModule implements NestModule {
