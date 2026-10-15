@@ -124,6 +124,23 @@ export class ReservationsService {
     });
   }
 
+  // Añado la función o método para cancelar una reserva.
+
+  async cancel(id: string) {
+    const cancelReservation = await this.findOne(id);
+    if (
+      cancelReservation.status === ReservationStatus.COMPLETED ||
+      cancelReservation.status === ReservationStatus.CANCELLED
+    ) {
+      throw new BadRequestException(
+        'La reserva ya ha sido completada o cancelada, no se puede cancelar nuevamente',
+      );
+    }
+
+    cancelReservation.status = ReservationStatus.CANCELLED;
+    return this.reservationsRepository.save(cancelReservation);
+  }
+
   async remove(id: string): Promise<void> {
     const result = await this.reservationsRepository.delete(id);
 
