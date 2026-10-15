@@ -6,6 +6,7 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { randomUUID } from 'crypto';
+import { instanceToPlain } from 'class-transformer';
 
 import { CustomersService } from '../customers/customers.service.js';
 import { CustomerStatus } from '../customers/entities/customer.entity.js';
@@ -38,10 +39,15 @@ export class AuthService {
       throw new UnauthorizedException('Credenciales incorrectas');
     }
 
-    const payload = { sub: customer.id, email: customer.email };
+    const payload = {
+      sub: customer.id,
+      email: customer.email,
+      role: customer.role,
+    };
 
     return {
       access_token: await this.jwtService.signAsync(payload),
+      customer: instanceToPlain(customer),
       user: {
         id: customer.id,
         name: customer.name,

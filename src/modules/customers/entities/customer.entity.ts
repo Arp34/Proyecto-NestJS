@@ -12,6 +12,11 @@ export enum CustomerStatus {
   BLOCKED = 'BLOCKED',
 }
 
+export enum CustomerRole {
+  ADMIN = 'ADMIN',
+  CUSTOMER = 'CUSTOMER',
+}
+
 @Entity('customers')
 export class Customer {
   @PrimaryGeneratedColumn('uuid')
@@ -38,6 +43,13 @@ export class Customer {
     default: CustomerStatus.ACTIVE,
   })
   status: CustomerStatus;
+
+  @Column({
+    type: 'enum',
+    enum: CustomerRole,
+    default: CustomerRole.CUSTOMER,
+  })
+  role: CustomerRole;
 
   @Column({ type: 'varchar', nullable: true, select: false })
   resetPasswordToken: string | null;
