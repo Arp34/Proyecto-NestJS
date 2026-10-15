@@ -1,0 +1,22 @@
+* [32mdev[m
+  feature/reservations-availability[m
+  feature/tables-status[m
+  [31mremotes/origin/HEAD[m -> origin/dev
+  [31mremotes/origin/chore/add-ci[m
+  [31mremotes/origin/dev[m
+  [31mremotes/origin/feat/auth-flows[m
+  [31mremotes/origin/feat/reservations-lifecycle[m
+  [31mremotes/origin/feature/product[m
+  [31mremotes/origin/feature/products-status[m
+  [31mremotes/origin/feature/public-menu[m
+  [31mremotes/origin/feature/reservations-availability[m
+  [31mremotes/origin/feature/reservations-cancellation[m
+  [31mremotes/origin/feature/reservations-creation[m
+  [31mremotes/origin/feature/reservations-reassignment[m
+  [31mremotes/origin/feature/tables-status[m
+  [31mremotes/origin/fix/env-validation[m
+  [31mremotes/origin/main[m
+  [31mremotes/origin/test/customers[m
+  [31mremotes/origin/test/product[m
+  [31mremotes/origin/test/reservations[m
+  [31mremotes/origin/test/tables[m
