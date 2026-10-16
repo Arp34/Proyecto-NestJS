@@ -8,6 +8,7 @@ import {
   Delete,
   HttpCode,
   HttpStatus,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiOperation,
@@ -19,6 +20,9 @@ import { ReservationsService } from './reservations.service.js';
 import { CreateReservationDto } from './dto/create-reservation.dto.js';
 import { UpdateReservationDto } from './dto/update-reservation.dto.js';
 import { ReservationResponseDto } from './dto/reservation-response.dto.js';
+import { Roles } from '../../common/decorators/roles.decorator.js';
+import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard.js';
+import { RolesGuard } from '../../common/guards/roles.guard.js';
 
 @ApiTags('Reservations')
 @Controller('reservations')
@@ -88,6 +92,42 @@ export class ReservationsController {
   })
   async cancel(@Param('id') id: string) {
     return this.reservationsService.cancel(id);
+  }
+
+  @Patch(':id/confirm')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN', 'WAITER')
+  @ApiOperation({ summary: 'Confirmar una reserva pendiente' })
+  @ApiResponse({ status: 200, description: 'Reserva confirmada' })
+  @ApiResponse({ status: 409, description: 'Estado de reserva no válido' })
+  @ApiResponse({ status: 404, description: 'Reserva no encontrada' })
+  confirm(@Param('id') id: string) {
+    return this.reservationsService.confirm(id);
+  }
+
+  @Patch(':id/check-in')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN', 'WAITER')
+  @ApiOperation({ summary: 'Registrar la llegada del cliente' })
+  @ApiResponse({ status: 200, description: 'Llegada registrada' })
+  @ApiResponse({ status: 409, description: 'Estado de reserva no válido' })
+  @ApiResponse({ status: 404, description: 'Reserva no encontrada' })
+  checkIn(@Param('id') id: string) {
+    return this.reservationsService.checkIn(id);
+  }
+
+  @Patch(':id/no-show')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN', 'WAITER')
+  @ApiOperation({ summary: 'Marcar una reserva como no presentada' })
+  @ApiResponse({
+    status: 200,
+    description: 'Reserva marcada como no presentada',
+  })
+  @ApiResponse({ status: 409, description: 'Estado de reserva no válido' })
+  @ApiResponse({ status: 404, description: 'Reserva no encontrada' })
+  markNoShow(@Param('id') id: string) {
+    return this.reservationsService.markNoShow(id);
   }
 
   @Patch(':id')

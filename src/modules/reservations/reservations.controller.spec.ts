@@ -1,36 +1,27 @@
 import { jest } from '@jest/globals';
+import { GUARDS_METADATA, PATH_METADATA } from '@nestjs/common/constants';
 import { Test, TestingModule } from '@nestjs/testing';
-import { CreateReservationDto } from './dto/create-reservation.dto.js';
-import { UpdateReservationDto } from './dto/update-reservation.dto.js';
+import { ROLES_KEY } from '../../common/decorators/roles.decorator.js';
+import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard.js';
+import { RolesGuard } from '../../common/guards/roles.guard.js';
 import { ReservationsController } from './reservations.controller.js';
 import { ReservationsService } from './reservations.service.js';
 
-type AsyncMock = jest.Mock<(...args: unknown[]) => Promise<unknown>>;
+type LifecycleMock = jest.Mock<(id: string) => Promise<unknown>>;
 
 describe('ReservationsController', () => {
   let controller: ReservationsController;
 
-  const mockService: Record<
-    'create' | 'findAll' | 'findOne' | 'update' | 'remove',
-    AsyncMock
-  > = {
-    create: jest.fn<(...args: unknown[]) => Promise<unknown>>(),
-    findAll: jest.fn<(...args: unknown[]) => Promise<unknown>>(),
-    findOne: jest.fn<(...args: unknown[]) => Promise<unknown>>(),
-    update: jest.fn<(...args: unknown[]) => Promise<unknown>>(),
-    remove: jest.fn<(...args: unknown[]) => Promise<unknown>>(),
-  };
-
   const reservationId = '3f6c1b0e-8a47-4d0a-9a43-2d1f8e5b7c11';
-  const createDto = {
-    customer_id: 'customer-1',
-    table_id: 'table-1',
-    date: '2099-12-31',
-    time: '20:00',
-    guests: 4,
-  } as unknown as CreateReservationDto;
-  const updateDto = { guests: 3 } as unknown as UpdateReservationDto;
   const reservation = { id: reservationId };
+  const mockService: Record<
+    'confirm' | 'checkIn' | 'markNoShow',
+    LifecycleMock
+  > = {
+    confirm: jest.fn<(id: string) => Promise<unknown>>(),
+    checkIn: jest.fn<(id: string) => Promise<unknown>>(),
+    markNoShow: jest.fn<(id: string) => Promise<unknown>>(),
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -49,47 +40,25 @@ describe('ReservationsController', () => {
     expect(controller).toBeDefined();
   });
 
-  it('POST: debe llamar a service.create con el DTO', async () => {
-    mockService.create.mockResolvedValue(reservation);
+  it.each([
+    ['confirm', 'confirm', ':id/confirm'],
+    ['checkIn', 'checkIn', ':id/check-in'],
+    ['markNoShow', 'markNoShow', ':id/no-show'],
+  ] as const)(
+    'expone %s con autenticación JWT y roles ADMIN/WAITER',
+    async (method, serviceMethod, routePath) => {
+      const handler = ReservationsController.prototype[method];
+      const guards = Reflect.getMetadata(GUARDS_METADATA, handler);
+      const roles = Reflect.getMetadata(ROLES_KEY, handler);
+      mockService[serviceMethod].mockResolvedValue(reservation);
 
-    const result = await controller.create(createDto);
+      const result = await controller[method](reservationId);
 
-    expect(mockService.create).toHaveBeenCalledWith(createDto);
-    expect(result).toEqual(reservation);
-  });
-
-  it('GET: debe llamar a service.findAll', async () => {
-    mockService.findAll.mockResolvedValue([reservation]);
-
-    const result = await controller.findAll();
-
-    expect(mockService.findAll).toHaveBeenCalled();
-    expect(result).toEqual([reservation]);
-  });
-
-  it('GET /:id: debe llamar a service.findOne con el id', async () => {
-    mockService.findOne.mockResolvedValue(reservation);
-
-    const result = await controller.findOne(reservationId);
-
-    expect(mockService.findOne).toHaveBeenCalledWith(reservationId);
-    expect(result).toEqual(reservation);
-  });
-
-  it('PATCH /:id: debe llamar a service.update con id y DTO', async () => {
-    mockService.update.mockResolvedValue(reservation);
-
-    const result = await controller.update(reservationId, updateDto);
-
-    expect(mockService.update).toHaveBeenCalledWith(reservationId, updateDto);
-    expect(result).toEqual(reservation);
-  });
-
-  it('DELETE /:id: debe llamar a service.remove con el id', async () => {
-    mockService.remove.mockResolvedValue(undefined);
-
-    await controller.remove(reservationId);
-
-    expect(mockService.remove).toHaveBeenCalledWith(reservationId);
-  });
+      expect(Reflect.getMetadata(PATH_METADATA, handler)).toBe(routePath);
+      expect(guards).toEqual([JwtAuthGuard, RolesGuard]);
+      expect(roles).toEqual(['ADMIN', 'WAITER']);
+      expect(mockService[serviceMethod]).toHaveBeenCalledWith(reservationId);
+      expect(result).toBe(reservation);
+    },
+  );
 });
