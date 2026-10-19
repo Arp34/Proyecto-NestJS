@@ -5,9 +5,10 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CreateTableDto } from './dto/create-table.dto.js'; // Quité el .js por estándar de Nest
+import { CreateTableDto } from './dto/create-table.dto.js';
 import { UpdateTableDto } from './dto/update-table.dto.js';
-import { Table } from './entities/table.entity.js'; // Asegúrate de que la ruta coincida con tu proyecto
+import { Table } from './entities/table.entity.js';
+import { TableStatus } from './enums/table-status.enum.js';
 
 @Injectable()
 export class TablesService {
@@ -17,12 +18,10 @@ export class TablesService {
   ) {}
 
   async create(createTableDto: CreateTableDto): Promise<Table> {
-    // 1. Buscar en la base de datos si ya existe una mesa con ese número
     const existingTable = await this.tableRepository.findOne({
       where: { number: createTableDto.number },
     });
 
-    // 2. Si la mesa existe, lanzar un error HTTP 409 (Conflict)
     if (existingTable) {
       throw new ConflictException(
         `La mesa con el número ${createTableDto.number} ya está registrada.`,
@@ -49,8 +48,6 @@ export class TablesService {
   }
 
   async update(id: string, updateTableDto: UpdateTableDto): Promise<Table> {
-    // .preload() busca la entidad por id y sobreescribe los campos con los del DTO
-    // Utilizamos Object.assign para evitar el error de "no-misused-spread"
     const table = await this.tableRepository.preload(
       Object.assign({ id }, updateTableDto),
     );
@@ -65,8 +62,25 @@ export class TablesService {
   }
 
   async remove(id: string): Promise<void> {
-    // Reutilizamos el método findOne para verificar si existe antes de eliminarla
     const table = await this.findOne(id);
     await this.tableRepository.remove(table);
+  }
+
+  // NUEVO: PATCH /tables/:id/status
+  async updateStatus(id: string, status: TableStatus): Promise<Table> {
+    const table = await this.findOne(id); // 404 controlado si no existe
+    table.status = status;
+    return await this.tableRepository.save(table);
+  }
+
+  // NUEVO - RN-019: para que lo usen reservas y pedidos
+  async assertTableUsable(id: string): Promise<Table> {
+    const table = await this.findOne(id);
+    if (table.status === TableStatus.OUT_OF_SERVICE) {
+      throw new ConflictException(
+        `La mesa #${table.number} está fuera de servicio`,
+      );
+    }
+    return table;
   }
 }

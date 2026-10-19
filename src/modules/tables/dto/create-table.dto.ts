@@ -2,10 +2,8 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   IsInt,
   IsNotEmpty,
-  IsOptional,
   IsPositive,
   IsString,
-  IsIn,
   MaxLength,
 } from 'class-validator';
 import { Transform } from 'class-transformer';
@@ -38,18 +36,4 @@ export class CreateTableDto {
   @IsNotEmpty({ message: 'La zona es requerida' })
   @MaxLength(50, { message: 'La zona no puede exceder los 50 caracteres' })
   zone: string;
-
-  @ApiProperty({
-    description: 'Estado de la mesa',
-    example: 'available',
-    enum: ['available', 'occupied', 'reserved'],
-    default: 'available',
-  })
-  @IsString()
-  @IsOptional() // Es opcional porque la base de datos tiene un valor por defecto ("available")
-  @IsIn(['available', 'occupied', 'reserved'], {
-    message:
-      'El estado debe ser uno de los siguientes: available, occupied, reserved',
-  })
-  status?: string;
 }

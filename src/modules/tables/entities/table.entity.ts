@@ -5,14 +5,9 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { TableStatus } from '../enums/table-status.enum.js';
 
-export enum tableStatus {
-  AVAILABLE = 'available',
-  OCCUPIED = 'occupied',
-  RESERVED = 'reserved',
-}
-
-@Entity('tables') // Note: "table" is often a reserved SQL keyword, so renaming the DB table is safer
+@Entity('tables')
 export class Table {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -26,8 +21,10 @@ export class Table {
   @Column({ type: 'varchar', nullable: true })
   zone: string;
 
-  @Column({ type: 'enum', enum: tableStatus, default: tableStatus.AVAILABLE })
-  status: string;
+  // RN-018: toda mesa nueva inicia AVAILABLE
+  // RN-020: solo estados definidos por el sistema
+  @Column({ type: 'enum', enum: TableStatus, default: TableStatus.AVAILABLE })
+  status: TableStatus;
 
   @CreateDateColumn()
   createAt: Date;
