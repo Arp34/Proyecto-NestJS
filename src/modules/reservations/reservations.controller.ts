@@ -95,8 +95,15 @@ export class ReservationsController {
   }
 
   @Patch(':id/confirm')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('ADMIN', 'WAITER')
+  //*
+  // comente esto porque me adelante a los temas del Auth y RolesGuard 
+  // por el momento se puede modificar cuando quieran 
+  // cuando Kevin termine el auth lo vuelvo a habilitar
+  // */
+
+
+  //@UseGuards(JwtAuthGuard, RolesGuard)
+  //@Roles('ADMIN', 'WAITER')
   @ApiOperation({ summary: 'Confirmar una reserva pendiente' })
   @ApiResponse({ status: 200, description: 'Reserva confirmada' })
   @ApiResponse({ status: 409, description: 'Estado de reserva no válido' })
@@ -106,8 +113,8 @@ export class ReservationsController {
   }
 
   @Patch(':id/check-in')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('ADMIN', 'WAITER')
+  //@UseGuards(JwtAuthGuard, RolesGuard)
+  //@Roles('ADMIN', 'WAITER')
   @ApiOperation({ summary: 'Registrar la llegada del cliente' })
   @ApiResponse({ status: 200, description: 'Llegada registrada' })
   @ApiResponse({ status: 409, description: 'Estado de reserva no válido' })
@@ -117,8 +124,8 @@ export class ReservationsController {
   }
 
   @Patch(':id/no-show')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('ADMIN', 'WAITER')
+  //@UseGuards(JwtAuthGuard, RolesGuard)
+  //@Roles('ADMIN', 'WAITER')
   @ApiOperation({ summary: 'Marcar una reserva como no presentada' })
   @ApiResponse({
     status: 200,
