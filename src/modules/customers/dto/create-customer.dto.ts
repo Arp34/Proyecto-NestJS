@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
-import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreateCustomerDto {
   @ApiProperty({
@@ -18,7 +18,7 @@ export class CreateCustomerDto {
   })
   @Transform(({ value }) => value?.trim())
   @IsString({ message: 'El telefono debe estar en un formato valido' })
-  @IsNotEmpty({ message: 'El telefono debe estar vacio' })
+  @IsNotEmpty({ message: 'El telefono no puede estar vacio' })
   phone: string;
 
   @ApiProperty({
@@ -29,6 +29,24 @@ export class CreateCustomerDto {
   @Transform(({ value }) => value?.trim())
   @IsString({ message: 'El email debe ser texto' })
   @IsEmail()
-  @IsNotEmpty({ message: 'El email no debe estar vacio' })
+  @IsNotEmpty({ message: 'El email no puede estar vacio' })
   email: string;
+
+  @ApiProperty({
+    example: '123456',
+    description: 'Contraseña del cliente',
+  })
+  @Transform(({ value }) => value?.trim())
+  @IsString({ message: 'La contraseña debe ser texto' })
+  @IsNotEmpty({ message: 'La contraseña no puede estar vacia' })
+  password: string;
+
+  @ApiProperty({
+    example: 'admin',
+    description: 'Rol del cliente (opcional, por defecto es "customer")',
+    required: false,
+  })
+  @IsOptional()
+  @IsString({ message: 'El rol debe ser texto' })
+  role?: string;
 }

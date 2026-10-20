@@ -1,28 +1,20 @@
-import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional, IsString } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsOptional, IsString, MinLength } from 'class-validator';
 
 export class UpdateProfileDto {
-  @ApiPropertyOptional({
-    example: 'Juan',
-    description: 'Nombre del cliente',
-  })
+  @ApiProperty({ example: 'Juan', required: false })
   @IsOptional()
-  @IsString()
+  @IsString({ message: 'El nombre debe ser texto' })
   name?: string;
 
-  @ApiPropertyOptional({
-    example: 'Pérez',
-    description: 'Apellido del cliente',
-  })
+  @ApiProperty({ example: '3001234567', required: false })
   @IsOptional()
-  @IsString()
-  lastName?: string;
-
-  @ApiPropertyOptional({
-    example: '+573001234567',
-    description: 'Teléfono de contacto',
-  })
-  @IsOptional()
-  @IsString()
+  @IsString({ message: 'El teléfono debe ser texto' })
   phone?: string;
+
+  @ApiProperty({ example: 'nuevaContrasena123', required: false })
+  @IsOptional()
+  @IsString({ message: 'La contraseña debe ser texto' })
+  @MinLength(6, { message: 'La contraseña debe tener al menos 6 caracteres' })
+  password?: string;
 }

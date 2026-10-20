@@ -23,7 +23,7 @@ export class AuthService {
 
   async login(loginDto: LoginDto) {
     const { email, password } = loginDto;
-    const customer = await this.customersService.findByEmailForAuth(email);
+    const customer = await this.customersService.findByEmail(email);
 
     // Evita pasar undefined a bcrypt y previene enumeración de usuarios
     if (!customer || !customer.password) {
@@ -35,6 +35,7 @@ export class AuthService {
     }
 
     const isPasswordValid = await bcrypt.compare(password, customer.password);
+
     if (!isPasswordValid) {
       throw new UnauthorizedException('Credenciales incorrectas');
     }
@@ -58,7 +59,7 @@ export class AuthService {
 
   async forgotPassword(forgotPasswordDto: ForgotPasswordDto) {
     const { email } = forgotPasswordDto;
-    const customer = await this.customersService.findByEmailForAuth(email);
+    const customer = await this.customersService.findByEmail(email);
 
     if (!customer) {
       return {

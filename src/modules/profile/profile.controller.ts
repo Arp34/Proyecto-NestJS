@@ -12,13 +12,14 @@ import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard.js';
 import { UpdateProfileDto } from '../profile/dto/update-profile.dto.js';
 
 @ApiTags('Profile')
-@ApiBearerAuth()
+@ApiBearerAuth('JWT-auth')
 @UseGuards(JwtAuthGuard)
 @Controller('profile')
 export class ProfileController {
   constructor(private readonly customersService: CustomersService) {}
 
   @Get()
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Consultar perfil del usuario autenticado' })
   @ApiResponse({
     status: 200,
