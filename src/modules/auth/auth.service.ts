@@ -23,7 +23,13 @@ export class AuthService {
 
   async login(loginDto: LoginDto) {
     const { email, password } = loginDto;
-    const customer = await this.customersService.findByEmail(email);
+
+    let customer;
+    try {
+      customer = await this.customersService.findByEmail(email);
+    } catch {
+      customer = null;
+    }
 
     // Evita pasar undefined a bcrypt y previene enumeración de usuarios
     if (!customer || !customer.password) {
@@ -59,7 +65,13 @@ export class AuthService {
 
   async forgotPassword(forgotPasswordDto: ForgotPasswordDto) {
     const { email } = forgotPasswordDto;
-    const customer = await this.customersService.findByEmail(email);
+
+    let customer;
+    try {
+      customer = await this.customersService.findByEmail(email);
+    } catch {
+      customer = null;
+    }
 
     if (!customer) {
       return {
@@ -71,15 +83,10 @@ export class AuthService {
     const expires = new Date(Date.now() + 15 * 60 * 1000);
 
     await this.customersService.setResetPasswordToken(
-      customer.id,
+      customer.email,
       token,
       expires,
     );
-
-    console.log(`\n========================================`);
-    console.log(`[SIMULACIÓN EMAIL] Reset Token: ${token}`);
-    console.log(`Para: ${email}`);
-    console.log(`========================================\n`);
 
     return {
       message: 'Si el correo está registrado, recibirás las instrucciones',
@@ -88,24 +95,9 @@ export class AuthService {
 
   async resetPassword(resetPasswordDto: ResetPasswordDto) {
     const { token, newPassword } = resetPasswordDto;
-    const customer = await this.customersService.findByResetToken(token);
-
-    if (!customer || !customer.resetPasswordExpires) {
-      throw new BadRequestException('El token de recuperación es inválido');
-    }
-
-    if (new Date() > customer.resetPasswordExpires) {
-      throw new BadRequestException('El token de recuperación ha expirado');
-    }
-
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
-    await this.customersService.resetPasswordWithToken(
-      customer.id,
-      hashedPassword,
+    return await this.customersService.resetPasswordWithToken(
+      token,
+      newPassword,
     );
-
-    return {
-      message: 'La contraseña ha sido restablecida exitosamente',
-    };
   }
 }

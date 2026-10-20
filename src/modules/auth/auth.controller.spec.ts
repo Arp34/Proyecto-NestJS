@@ -1,15 +1,16 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { jest } from '@jest/globals';
 import { AuthController } from './auth.controller.js';
 import { AuthService } from './auth.service.js';
 
 const mockAuthService = () => ({
-  login: jest.fn().mockResolvedValue({ access_token: 'mock_token' }),
-  forgotPassword: jest
-    .fn()
-    .mockResolvedValue({ message: 'Instrucciones enviadas' }),
-  resetPassword: jest
-    .fn()
-    .mockResolvedValue({ message: 'Contraseña restablecida' }),
+  login: (jest.fn() as any).mockResolvedValue({ access_token: 'mock_token' }),
+  forgotPassword: (jest.fn() as any).mockResolvedValue({
+    message: 'Instrucciones enviadas',
+  }),
+  resetPassword: (jest.fn() as any).mockResolvedValue({
+    message: 'Contraseña restablecida',
+  }),
 });
 
 describe('AuthController', () => {

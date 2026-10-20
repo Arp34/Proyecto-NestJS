@@ -118,8 +118,11 @@ export class CustomersService {
     const customer = await this.customerRepository.findOne({
       where: { email },
     });
+
+    // Si no existe, simplemente retornamos sin lanzar excepciones
+    // para evitar revelar correos y generar errores 404 indeseados.
     if (!customer) {
-      throw new NotFoundException('Correo no encontrado');
+      return;
     }
 
     customer.resetPasswordToken = token;

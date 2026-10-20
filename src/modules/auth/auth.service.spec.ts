@@ -1,30 +1,37 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { jest } from '@jest/globals';
 import { AuthService } from './auth.service.js';
 import { CustomersService } from '../customers/customers.service.js';
 import { JwtService } from '@nestjs/jwt';
-import { UnauthorizedException, BadRequestException } from '@nestjs/common';
-import {
-  CustomerStatus,
-  CustomerRole,
-} from '../customers/entities/customer.entity.js';
+import { UnauthorizedException } from '@nestjs/common';
+import { CustomerStatus } from '../customers/entities/customer.entity.js';
 import * as bcrypt from 'bcrypt';
 
 const mockCustomersService = () => ({
-  findByEmailForAuth: jest.fn(),
-  setResetPasswordToken: jest.fn(),
-  findByResetToken: jest.fn(),
-  resetPasswordWithToken: jest.fn(),
+  findByEmail: (jest.fn() as any).mockResolvedValue(null),
+  setResetPasswordToken: (jest.fn() as any).mockResolvedValue(null),
+  resetPasswordWithToken: (jest.fn() as any).mockResolvedValue({
+    message: 'Contraseña restablecida',
+  }),
 });
 
 const mockJwtService = () => ({
-  signAsync: jest.fn().mockResolvedValue('mock_token'),
+  signAsync: (jest.fn() as any).mockResolvedValue('mock_token'),
 });
 
 describe('AuthService', () => {
   let service: AuthService;
   let customersService: CustomersService;
+  let hashedPassword: string;
+
+  beforeAll(async () => {
+    // Generamos un hash real y rápido para las pruebas usando bcrypt
+    hashedPassword = await bcrypt.hash('password123', 4);
+  });
 
   beforeEach(async () => {
+    jest.clearAllMocks();
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         AuthService,
@@ -43,9 +50,7 @@ describe('AuthService', () => {
 
   describe('login', () => {
     it('should throw UnauthorizedException if customer is not found', async () => {
-      jest
-        .spyOn(customersService, 'findByEmailForAuth')
-        .mockResolvedValue(null);
+      (customersService.findByEmail as any).mockResolvedValue(null);
 
       await expect(
         service.login({ email: 'test@test.com', password: '123' } as any),
@@ -56,16 +61,17 @@ describe('AuthService', () => {
       const mockCustomer = {
         id: '1',
         email: 'test@test.com',
-        password: 'hashed_password',
+        password: hashedPassword,
         status: CustomerStatus.INACTIVE,
-        role: CustomerRole.CUSTOMER,
+        role: 'customer',
       };
-      jest
-        .spyOn(customersService, 'findByEmailForAuth')
-        .mockResolvedValue(mockCustomer as any);
+      (customersService.findByEmail as any).mockResolvedValue(mockCustomer);
 
       await expect(
-        service.login({ email: 'test@test.com', password: '123' } as any),
+        service.login({
+          email: 'test@test.com',
+          password: 'password123',
+        } as any),
       ).rejects.toThrow(UnauthorizedException);
     });
 
@@ -73,17 +79,17 @@ describe('AuthService', () => {
       const mockCustomer = {
         id: '1',
         email: 'test@test.com',
-        password: 'hashed_password',
+        password: hashedPassword,
         status: CustomerStatus.ACTIVE,
-        role: CustomerRole.CUSTOMER,
+        role: 'customer',
       };
-      jest
-        .spyOn(customersService, 'findByEmailForAuth')
-        .mockResolvedValue(mockCustomer as any);
-      jest.spyOn(bcrypt, 'compare').mockResolvedValue(false as never);
+      (customersService.findByEmail as any).mockResolvedValue(mockCustomer);
 
       await expect(
-        service.login({ email: 'test@test.com', password: 'wrong' } as any),
+        service.login({
+          email: 'test@test.com',
+          password: 'wrongpassword',
+        } as any),
       ).rejects.toThrow(UnauthorizedException);
     });
 
@@ -92,14 +98,11 @@ describe('AuthService', () => {
         id: '1',
         name: 'Juan',
         email: 'test@test.com',
-        password: 'hashed_password',
+        password: hashedPassword,
         status: CustomerStatus.ACTIVE,
-        role: CustomerRole.CUSTOMER,
+        role: 'customer',
       };
-      jest
-        .spyOn(customersService, 'findByEmailForAuth')
-        .mockResolvedValue(mockCustomer as any);
-      jest.spyOn(bcrypt, 'compare').mockResolvedValue(true as never);
+      (customersService.findByEmail as any).mockResolvedValue(mockCustomer);
 
       const result = await service.login({
         email: 'test@test.com',
@@ -114,9 +117,7 @@ describe('AuthService', () => {
 
   describe('forgotPassword', () => {
     it('should return generic message even if customer is not found (anti-enumeration)', async () => {
-      jest
-        .spyOn(customersService, 'findByEmailForAuth')
-        .mockResolvedValue(null);
+      (customersService.findByEmail as any).mockResolvedValue(null);
 
       const result = await service.forgotPassword({
         email: 'notfound@test.com',
@@ -128,9 +129,7 @@ describe('AuthService', () => {
 
     it('should generate token and save it if customer exists', async () => {
       const mockCustomer = { id: '1', email: 'test@test.com' };
-      jest
-        .spyOn(customersService, 'findByEmailForAuth')
-        .mockResolvedValue(mockCustomer as any);
+      (customersService.findByEmail as any).mockResolvedValue(mockCustomer);
 
       const result = await service.forgotPassword({ email: 'test@test.com' });
 
@@ -144,31 +143,22 @@ describe('AuthService', () => {
   });
 
   describe('resetPassword', () => {
-    it('should throw BadRequestException if token is invalid or expired info is missing', async () => {
-      jest.spyOn(customersService, 'findByResetToken').mockResolvedValue(null);
+    it('should delegate reset password to customersService successfully', async () => {
+      (customersService.resetPasswordWithToken as any).mockResolvedValue({
+        message: 'Contraseña restablecida',
+      });
 
-      await expect(
-        service.resetPassword({ token: 'invalid_token', newPassword: '123' }),
-      ).rejects.toThrow(BadRequestException);
-    });
+      const result = await service.resetPassword({
+        token: 'valid_token',
+        newPassword: 'newpassword123',
+      });
 
-    it('should throw BadRequestException if token has expired', async () => {
-      const expiredDate = new Date(Date.now() - 1000);
-      const mockCustomer = {
-        id: '1',
-        resetPasswordToken: 'valid_token',
-        resetPasswordExpires: expiredDate,
-      };
-      jest
-        .spyOn(customersService, 'findByResetToken')
-        .mockResolvedValue(mockCustomer as any);
-
-      await expect(
-        service.resetPassword({
-          token: 'valid_token',
-          newPassword: 'newpassword123',
-        }),
-      ).rejects.toThrow(BadRequestException);
+      expect(result).toEqual({ message: 'Contraseña restablecida' });
+      // eslint-disable-next-line @typescript-eslint/unbound-method
+      expect(customersService.resetPasswordWithToken).toHaveBeenCalledWith(
+        'valid_token',
+        'newpassword123',
+      );
     });
   });
 });
