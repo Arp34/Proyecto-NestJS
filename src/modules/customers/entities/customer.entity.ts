@@ -6,60 +6,38 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-export enum CustomerStatus {
-  ACTIVE = 'ACTIVE',
-  INACTIVE = 'INACTIVE',
-  BLOCKED = 'BLOCKED',
-}
-
-export enum CustomerRole {
-  ADMIN = 'ADMIN',
-  CUSTOMER = 'CUSTOMER',
-}
-
 @Entity('customers')
 export class Customer {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ type: 'varchar', length: 100 })
+  @Column({
+    type: 'varchar',
+    length: 100,
+  })
   name: string;
 
-  @Column({ type: 'varchar', length: 100, nullable: true })
-  lastName: string;
-
-  @Column({ type: 'varchar', length: 20 })
+  @Column({
+    type: 'varchar',
+    length: 20,
+  })
   phone: string;
 
-  @Column({ type: 'varchar', length: 255, nullable: true, unique: true })
+  @Column({
+    type: 'varchar',
+    length: 255,
+    nullable: true,
+    unique: true,
+  })
   email: string;
 
-  @Column({ type: 'varchar', length: 255, select: false, nullable: true })
-  password: string;
-
-  @Column({
-    type: 'enum',
-    enum: CustomerStatus,
-    default: CustomerStatus.ACTIVE,
+  @CreateDateColumn({
+    name: 'created_at',
   })
-  status: CustomerStatus;
-
-  @Column({
-    type: 'enum',
-    enum: CustomerRole,
-    default: CustomerRole.CUSTOMER,
-  })
-  role: CustomerRole;
-
-  @Column({ type: 'varchar', nullable: true, select: false })
-  resetPasswordToken: string | null;
-
-  @Column({ type: 'timestamp', nullable: true, select: false })
-  resetPasswordExpires: Date | null;
-
-  @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
-  @UpdateDateColumn({ name: 'updated_at' })
+  @UpdateDateColumn({
+    name: 'updated_at',
+  })
   updatedAt: Date;
 }

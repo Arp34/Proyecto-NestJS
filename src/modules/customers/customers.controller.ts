@@ -10,7 +10,6 @@ import {
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { CustomersService } from './customers.service.js';
-import { ChangePasswordDto } from '../auth/dto/change-password.dto.js';
 import { CreateCustomerDto } from './dto/create-customer.dto.js';
 import { UpdateCustomerDto } from './dto/update-customer.dto.js';
 
@@ -52,15 +51,6 @@ export class CustomersController {
     @Body() updateCustomerDto: UpdateCustomerDto,
   ) {
     return this.customersService.update(id, updateCustomerDto);
-  }
-
-  @Patch(':id/reset-password')
-  @ApiOperation({ summary: 'Cambiar contraseña de cliente' })
-  changePassword(
-    @Param('id') id: string,
-    @Body() changePasswordDto: ChangePasswordDto,
-  ) {
-    return { msg: 'Contraseña cambiada con éxito', data: changePasswordDto };
   }
 
   @Delete(':id')
