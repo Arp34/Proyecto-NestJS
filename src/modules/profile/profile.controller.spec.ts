@@ -6,10 +6,8 @@ import { UpdateProfileDto } from './dto/update-profile.dto.js';
 
 describe('ProfileController', () => {
   let controller: ProfileController;
-  let service: CustomersService;
 
   const mockCustomersService = {
-    // Pasamos la función directamente a jest.fn() para que infiera los tipos
     findOne: jest.fn((userId: string) => {
       return Promise.resolve({
         id: userId,
@@ -18,7 +16,12 @@ describe('ProfileController', () => {
       });
     }),
     updateProfile: jest.fn((userId: string, dto: UpdateProfileDto) => {
-      return Promise.resolve({ id: userId, ...dto });
+      return Promise.resolve({
+        id: userId,
+        name: dto.name,
+        phone: dto.phone,
+        password: dto.password,
+      });
     }),
   };
 
@@ -34,7 +37,6 @@ describe('ProfileController', () => {
     }).compile();
 
     controller = module.get<ProfileController>(ProfileController);
-    service = module.get<CustomersService>(CustomersService);
   });
 
   it('debería estar definido', () => {
@@ -46,7 +48,9 @@ describe('ProfileController', () => {
       const mockUser = { userId: '123e4567-e89b-12d3-a456-426614174000' };
       const result = await controller.getProfile(mockUser);
 
-      expect(service.findOne).toHaveBeenCalledWith(mockUser.userId);
+      expect(mockCustomersService.findOne).toHaveBeenCalledWith(
+        mockUser.userId,
+      );
       expect(result).toEqual(
         expect.objectContaining({
           id: mockUser.userId,
@@ -66,7 +70,7 @@ describe('ProfileController', () => {
 
       const result = await controller.updateProfile(mockUser, updateDto);
 
-      expect(service.updateProfile).toHaveBeenCalledWith(
+      expect(mockCustomersService.updateProfile).toHaveBeenCalledWith(
         mockUser.userId,
         updateDto,
       );

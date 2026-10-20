@@ -38,7 +38,9 @@ export class CustomersService {
     }
 
     const customer = this.customerRepository.create({
-      ...createCustomerDto,
+      name: createCustomerDto.name,
+      email: createCustomerDto.email,
+      phone: createCustomerDto.phone,
       password: hashedPassword,
       role: createCustomerDto.role || 'customer',
     });
