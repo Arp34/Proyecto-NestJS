@@ -25,8 +25,7 @@ El flujo general de una solicitud es:
 
 ```text
 Controller → Service → Repository → TypeORM → PostgreSQL
-````
-
+```
 
 ## Decisiones de diseño
 
@@ -156,12 +155,12 @@ Se utiliza `CreateCustomerDto` para validar los datos al crear un cliente.
 
 Las principales validaciones son:
 
-* `name` debe ser un texto.
-* `name` no puede estar vacío.
-* `phone` debe ser un texto.
-* `phone` no puede estar vacío.
-* `email` es opcional.
-* Si se proporciona `email`, debe tener un formato válido.
+- `name` debe ser un texto.
+- `name` no puede estar vacío.
+- `phone` debe ser un texto.
+- `phone` no puede estar vacío.
+- `email` es opcional.
+- Si se proporciona `email`, debe tener un formato válido.
 
 Para las actualizaciones se utiliza `UpdateCustomerDto`, que hereda de `CreateCustomerDto` mediante `PartialType`.
 
@@ -220,9 +219,9 @@ El módulo utiliza las excepciones HTTP proporcionadas por NestJS para manejar d
 
 Entre ellas:
 
-* `400 Bad Request`: datos inválidos o UUID con formato incorrecto.
-* `404 Not Found`: el cliente solicitado no existe.
-* `409 Conflict`: se intenta utilizar un correo que ya pertenece a otro cliente.
+- `400 Bad Request`: datos inválidos o UUID con formato incorrecto.
+- `404 Not Found`: el cliente solicitado no existe.
+- `409 Conflict`: se intenta utilizar un correo que ya pertenece a otro cliente.
 
 Esto permite devolver respuestas HTTP descriptivas en lugar de exponer directamente errores internos de la aplicación o de PostgreSQL.
 
@@ -250,11 +249,11 @@ La documentación está disponible en:
 
 Desde Swagger se pueden consultar y probar las siguientes operaciones:
 
-* `POST /customers`: Crear un cliente.
-* `GET /customers`: Obtener todos los clientes.
-* `GET /customers/:id`: Obtener un cliente por su ID.
-* `PATCH /customers/:id`: Actualizar un cliente.
-* `DELETE /customers/:id`: Eliminar un cliente.
+- `POST /customers`: Crear un cliente.
+- `GET /customers`: Obtener todos los clientes.
+- `GET /customers/:id`: Obtener un cliente por su ID.
+- `PATCH /customers/:id`: Actualizar un cliente.
+- `DELETE /customers/:id`: Eliminar un cliente.
 
 ---
 
@@ -305,13 +304,13 @@ PostgreSQL
 La conexión general con PostgreSQL se configura mediante:
 
 ```ts
-TypeOrmModule.forRoot()
+TypeOrmModule.forRoot();
 ```
 
 Mientras que el repositorio de `Customer` se registra dentro del módulo mediante:
 
 ```ts
-TypeOrmModule.forFeature([Customer])
+TypeOrmModule.forFeature([Customer]);
 ```
 
 Esto permite inyectar el repositorio en el Service:
@@ -388,29 +387,29 @@ DELETE /customers/:id
 
 ## Tecnologías utilizadas
 
-* NestJS
-* TypeScript
-* TypeORM
-* PostgreSQL
-* class-validator
-* class-transformer
-* Swagger
-* Docker / Docker Compose
+- NestJS
+- TypeScript
+- TypeORM
+- PostgreSQL
+- class-validator
+- class-transformer
+- Swagger
+- Docker / Docker Compose
 
 ---
 
 ## Buenas prácticas implementadas
 
-* Separación de responsabilidades mediante Controller, Service y Repository.
-* Uso de DTOs para controlar los datos de entrada.
-* Validación mediante `class-validator`.
-* Uso de UUID como identificador.
-* Validación del formato de los UUID.
-* Manejo de errores mediante excepciones HTTP de NestJS.
-* Validación de existencia antes de actualizar o eliminar.
-* Control de correos electrónicos duplicados.
-* Uso de variables de entorno para la configuración de la base de datos.
-* Documentación de la API mediante Swagger.
+- Separación de responsabilidades mediante Controller, Service y Repository.
+- Uso de DTOs para controlar los datos de entrada.
+- Validación mediante `class-validator`.
+- Uso de UUID como identificador.
+- Validación del formato de los UUID.
+- Manejo de errores mediante excepciones HTTP de NestJS.
+- Validación de existencia antes de actualizar o eliminar.
+- Control de correos electrónicos duplicados.
+- Uso de variables de entorno para la configuración de la base de datos.
+- Documentación de la API mediante Swagger.
 
 ---
 
@@ -454,16 +453,18 @@ Las pruebas del módulo se ejecutan mediante:
 npm run test -- customers
 ```
 
-``` text
+```text
 
 src/customers/evidence-test-service.png
 
 ```
+
 ### Evidencia de Pruebas Unitarias
 
 Se implementó una suite de pruebas unitarias para el módulo Customers utilizando Jest y mocks de TypeORM, evitando conexiones reales a PostgreSQL.
 
 Pruebas del CustomersService
+
 - Creación exitosa de un cliente.
 - Email duplicado → ConflictException (409).
 - Consulta de todos los clientes.
@@ -475,7 +476,6 @@ Pruebas del CustomersService
 - Eliminación mediante remove().
 - ID inexistente durante eliminación → NotFoundException (404).
 
-
 ### Pruebas del CustomersController
 
 Se validó que cada método del controlador delegue correctamente en CustomersService:
@@ -485,7 +485,6 @@ Se validó que cada método del controlador delegue correctamente en CustomersSe
 - GET /customers/:id → findOne()
 - PATCH /customers/:id → update()
 - DELETE /customers/:id → remove()
-
 
 ### Mock del repositorio
 
@@ -506,15 +505,10 @@ npm run test -- customers
 resultado esperado
 
 Test Suites: 2 passed, 2 total
-Tests:       17 passed, 17 total
-
+Tests: 17 passed, 17 total
 
 ### Verificaciones finales
 
 npm run test -- customers
 npm run build
 npm run lint
-
-
-
-

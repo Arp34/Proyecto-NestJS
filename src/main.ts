@@ -41,6 +41,17 @@ async function bootstrap() {
       'API Backend para la gestión de mesas, pedidos y menú del restaurante',
     )
     .setVersion('1.0')
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        name: 'JWT',
+        description: 'Introduce tu token de acceso (Bearer Token)',
+        in: 'header',
+      },
+      'JWT-auth',
+    )
     .addTag('tables')
     .build();
 
