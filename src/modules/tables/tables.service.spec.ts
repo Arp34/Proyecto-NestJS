@@ -1,3 +1,4 @@
+import { describe, it, expect } from '@jest/globals';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TablesService } from './tables.service.js';
 import { getRepositoryToken } from '@nestjs/typeorm';
@@ -6,6 +7,7 @@ import { ConflictException, NotFoundException } from '@nestjs/common';
 import { jest } from '@jest/globals';
 import { CreateTableDto } from './dto/create-table.dto.js';
 import { UpdateTableDto } from './dto/update-table.dto.js';
+import { TableStatus } from './enums/table-status.enum.js';
 
 describe('TablesService', () => {
   let service: TablesService;
@@ -13,11 +15,9 @@ describe('TablesService', () => {
   const mockTableId = '123e4567-e89b-12d3-a456-426614174000';
   const mockTable = { id: mockTableId, number: 1, capacity: 4 };
 
-  // Tipado estricto para evitar el error de "never"
   let mockTableRepository: any;
 
   beforeEach(async () => {
-    // Inicialización de funciones simuladas en cada prueba
     mockTableRepository = {
       findOne: jest.fn(),
       findOneBy: jest.fn(),
@@ -49,7 +49,6 @@ describe('TablesService', () => {
     it('debe crear y retornar una mesa si el número no existe', async () => {
       const dto: CreateTableDto = { number: 1, capacity: 4, zone: 'Terraza' };
 
-      // Simulamos que la mesa no existe
       mockTableRepository.findOne.mockResolvedValue(null);
       mockTableRepository.create.mockReturnValue(mockTable);
       mockTableRepository.save.mockResolvedValue(mockTable);
@@ -67,7 +66,6 @@ describe('TablesService', () => {
     it('debe lanzar ConflictException si el número de mesa ya existe', async () => {
       const dto: CreateTableDto = { number: 1, capacity: 4, zone: 'Terraza' };
 
-      // Simulamos que la mesa ya existe
       mockTableRepository.findOne.mockResolvedValue(mockTable);
 
       await expect(service.create(dto)).rejects.toThrow(ConflictException);
@@ -138,7 +136,6 @@ describe('TablesService', () => {
 
   describe('remove', () => {
     it('debe eliminar la mesa si existe', async () => {
-      // remove() usa this.findOne(), por lo tanto simulamos su dependencia interna: findOneBy
       mockTableRepository.findOneBy.mockResolvedValue(mockTable);
       mockTableRepository.remove.mockResolvedValue(mockTable);
 
@@ -157,6 +154,68 @@ describe('TablesService', () => {
         NotFoundException,
       );
       expect(mockTableRepository.remove).not.toHaveBeenCalled();
+    });
+  });
+
+  // NUEVO
+  describe('updateStatus', () => {
+    it('debe cambiar el estado de la mesa y guardarla', async () => {
+      const table = { ...mockTable, status: TableStatus.AVAILABLE };
+      const saved = { ...table, status: TableStatus.OCCUPIED };
+
+      mockTableRepository.findOneBy.mockResolvedValue(table);
+      mockTableRepository.save.mockResolvedValue(saved);
+
+      const result = await service.updateStatus(
+        mockTableId,
+        TableStatus.OCCUPIED,
+      );
+
+      expect(mockTableRepository.findOneBy).toHaveBeenCalledWith({
+        id: mockTableId,
+      });
+      expect(mockTableRepository.save).toHaveBeenCalledWith(
+        expect.objectContaining({ status: TableStatus.OCCUPIED }),
+      );
+      expect(result.status).toBe(TableStatus.OCCUPIED);
+    });
+
+    it('debe lanzar NotFoundException si la mesa no existe', async () => {
+      mockTableRepository.findOneBy.mockResolvedValue(null);
+
+      await expect(
+        service.updateStatus(mockTableId, TableStatus.OCCUPIED),
+      ).rejects.toThrow(NotFoundException);
+      expect(mockTableRepository.save).not.toHaveBeenCalled();
+    });
+  });
+
+  // NUEVO
+  describe('assertTableUsable', () => {
+    it('debe retornar la mesa si está disponible', async () => {
+      const table = { ...mockTable, status: TableStatus.AVAILABLE };
+      mockTableRepository.findOneBy.mockResolvedValue(table);
+
+      const result = await service.assertTableUsable(mockTableId);
+
+      expect(result).toEqual(table);
+    });
+
+    it('debe lanzar ConflictException si la mesa está OUT_OF_SERVICE (RN-019)', async () => {
+      const table = { ...mockTable, status: TableStatus.OUT_OF_SERVICE };
+      mockTableRepository.findOneBy.mockResolvedValue(table);
+
+      await expect(service.assertTableUsable(mockTableId)).rejects.toThrow(
+        ConflictException,
+      );
+    });
+
+    it('debe lanzar NotFoundException si la mesa no existe', async () => {
+      mockTableRepository.findOneBy.mockResolvedValue(null);
+
+      await expect(service.assertTableUsable(mockTableId)).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 });
