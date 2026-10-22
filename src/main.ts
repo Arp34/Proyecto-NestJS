@@ -9,8 +9,8 @@ import { AllExceptionsFilter } from './common/filters/all-exceptions.filter.js';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // 1. Prefijo Global Base
-  app.setGlobalPrefix('api');
+  // Prefijo global: POST /api/v1/reservations
+  app.setGlobalPrefix('api/v1');
 
   // 2. Habilitar Versionado Nativo de NestJS (Requerimiento Técnico)
 
@@ -31,7 +31,6 @@ async function bootstrap() {
     }),
   );
 
-  // Instanciamos el Logger de NestJS
   const logger = new Logger('Bootstrap');
 
   // Configuración de Swagger
@@ -42,6 +41,7 @@ async function bootstrap() {
     )
     .setVersion('1.0')
     .addTag('tables')
+    .addTag('Reservations', 'Gestión de reservas de mesas')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
