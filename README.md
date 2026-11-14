@@ -1,10 +1,41 @@
 # Restaurant Management API
 
+API REST para gestionar un restaurante: **mesas, reservas, clientes, productos y categorías**. Proyecto formativo en equipo de Riwi (5 personas), del 14 de septiembre al 22 de octubre de 2026. Quedó inconcluso porque el equipo fue reasignado a otro proyecto.
+
+## Mi papel · Axel Ruiz Polo, líder del proyecto
+
+- Inicié el proyecto: NestJS con ES Modules, TypeORM, PostgreSQL en Docker Compose, Swagger y la guía de arranque.
+- Base de autenticación: Passport + JWT, `JwtAuthGuard` y `RolesGuard`.
+- Manejo global de errores (`AllExceptionsFilter`) y registro de peticiones (`LoggerMiddleware`).
+- Módulo de categorías completo, con tests unitarios.
+- Integración continua con GitHub Actions y formato con Prettier.
+- Organicé el trabajo con ramas y pull requests, y revisé y fusioné la mayoría.
+
+## Stack
+
+NestJS · TypeScript · TypeORM · PostgreSQL · Docker · Passport + JWT · Swagger · Jest · GitHub Actions
+
+## Módulos
+
+`auth` · `categories` · `customers` · `products` · `reservations` · `tables`, más `common/` (guards, decoradores, filtro y middleware globales).
+
+Con la API en marcha, la documentación interactiva está en `http://localhost:3000/api/docs`. Los pasos para levantarla están en la guía de abajo.
+
+## Autor
+
+**Axel Ruiz Polo** · Desarrollador Full Stack Junior · [Portafolio](https://arp34.github.io/) · [LinkedIn](https://www.linkedin.com/in/axel-ruiz-polo/)
+
+---
+
+## Guía del equipo
+
+*Guía de trabajo que usábamos en el equipo: arranque local, ramas y convenciones.*
+
 Backend en NestJS (ESModules) desarrollado con TypeORM, PostgreSQL y Jest. Esta API provee la infraestructura para la gestión integral de un restaurante (administración de mesas, comandas, menú y órdenes).
 
 ---
 
-## Requisitos Previos
+### Requisitos Previos
 
 Antes de comenzar, asegúrate de tener instalado localmente:
 - **Node.js** (v18 o superior)
@@ -14,7 +45,7 @@ Antes de comenzar, asegúrate de tener instalado localmente:
 
 ---
 
-## Guía de Inicio Rápido (Setup Local)
+### Guía de Inicio Rápido (Setup Local)
 
 Sigue estos pasos en orden para levantar la aplicación y la base de datos en tu entorno de desarrollo:
 
@@ -59,7 +90,7 @@ La aplicación se compilará y estará escuchando por defecto en: `http://localh
 
 ---
 
-## 🛠️ Guía de Creación de Módulos (CLI NestJS)
+### 🛠️ Guía de Creación de Módulos (CLI NestJS)
 
 Para mantener la arquitectura del proyecto limpia y organizada, **todos los módulos deben ubicarse dentro de la carpeta `src/modules/`**.
 
@@ -68,7 +99,7 @@ Al ejecutar el comando de generación de NestJS CLI, asegúrate de incluir el pr
 ```bash
 npx nest generate resource modules/<nombre_del_modulo>
 
-## Documentación Interactiva de la API (Swagger)
+### Documentación Interactiva de la API (Swagger)
 
 Con la aplicación en ejecución (`npm run start:dev`), puedes acceder a la consola interactiva de Swagger para probar los endpoints y consultar los DTOs:
 
@@ -76,24 +107,24 @@ Con la aplicación en ejecución (`npm run start:dev`), puedes acceder a la cons
 
 ---
 
-## Pruebas Unitarias e Integración (Jest)
+### Pruebas Unitarias e Integración (Jest)
 
 Para ejecutar la suite de pruebas del proyecto:
 
 ```bash
-# Ejecutar pruebas unitarias
+### Ejecutar pruebas unitarias
 npm run test
 
-# Ejecutar pruebas en modo watch (desarrollo)
+### Ejecutar pruebas en modo watch (desarrollo)
 npm run test:watch
 
-# Ver la cobertura de código
+### Ver la cobertura de código
 npm run test:cov
 ```
 
 ---
 
-## Comandos Útiles
+### Comandos Útiles
 
 | Comando | Descripción |
 | :--- | :--- |
@@ -105,7 +136,7 @@ npm run test:cov
 
 ---
 
-## Reglas y Flujo de Trabajo en Git
+### Reglas y Flujo de Trabajo en Git
 
 1. **Ramas Principales:**
    - `main`: Código en producción 100% estable.
@@ -116,7 +147,7 @@ npm run test:cov
 
 ---
 
-## Estructura del Proyecto
+### Estructura del Proyecto
 
 ```text
 .
